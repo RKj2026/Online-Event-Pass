@@ -6,7 +6,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Event Entry Management System | AAFT Online</title>
+<title>Gate Operations | AAFT Online</title>
 
 <meta property="og:title" content="AAFT Online Event Pass - Gate Operations">
 <meta property="og:description" content="Staff dashboard for managing event check-ins.">
@@ -116,7 +116,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:6px;font-wei
 .avatar-gray{background: var(--border); color:var(--text2);}
 .guest-info{flex:1;min-width:0;}
 .guest-name{font-size:14px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.guest-meta{font-size:11px;color:var(--text3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;}
+.guest-meta{font-size:11px;color:var(--text3);margin-top:3px; white-space:nowrap;overflow:hidden;text-overflow:ellipsis; font-weight:500;}
 
 /* Analytics Tab Grids */
 .chart-container { position: relative; height: 200px; width: 100%; margin-top: 10px; }
@@ -198,6 +198,20 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:6px;font-wei
 #undo-btn { background: rgba(255,255,255,0.15); color: #fff; border: none; padding: 6px 14px; border-radius: 99px; font-size: 11px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing:0.5px; transition:background 0.2s;}
 #undo-btn:hover { background: rgba(239,68,68,0.8); }
 
+/* Watermark */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background-image: url('bg-image.jpg');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 60%;
+  opacity: 0.08;
+  z-index: -1;
+  pointer-events: none;
+}
 </style>
 </head>
 <body>
@@ -255,7 +269,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:6px;font-wei
         <div class="upload-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
           <div class="upload-icon">📋</div>
           <h3>Upload Attendee List</h3>
-          <p>Excel (.xlsx) or CSV<br>Columns: <strong>ID · Name · Email · Mobile · Programme · Year · Pass Type</strong><br><span style="font-size:10px;color:var(--accent);">Pro-Tip: Include 'Guest Name' column to pre-fill Dual Passes!</span></p>
+          <p>Excel (.xlsx) or CSV<br>Columns: <strong>ID · Name · Email · Mobile · Programme · Year · Pass Type</strong><br><span style="font-size:10px;color:var(--accent);">Pro-Tip: Include 'Guest Name', 'Guest Email', and 'Guest Mobile' to pre-fill Dual Passes!</span></p>
           <input type="file" id="file-input" accept=".xlsx,.csv" style="display:none" onchange="handleFile(event)">
         </div>
       </div>
@@ -653,28 +667,20 @@ window.handleFile = async function(e){
         const cNameKey = fk(['guestname', 'compname', 'companionname', 'guest', 'companion']);
         const cEmlKey = fk(['guestemail', 'compemail']);
         const cMobKey = fk(['guestmobile', 'compmobile', 'guestphone']);
-        const cAlumKey = fk(['guestalumni', 'compalumni', 'isalumni']);
-        const cSchKey = fk(['guestschool', 'compschool']);
-        const cYrKey = fk(['guestyear', 'compyear']);
-        const cDegKey = fk(['guestdegree', 'compdegree']);
 
         const name = cleanStr(row[nameKey||keys[1]]); if(!name)continue;
         const uid = cleanStr(row[uidKey||keys[0]]) || ('ATT-'+Math.random().toString(36).substr(2,6).toUpperCase());
         
         await setDoc(doc(db, "guests", uid), {
           uid, name, 
-          email:cleanStr(row[emlKey]||''), mobile:cleanStr(row[mobKey]||''), 
+          email:cleanStr(row[emlKey]||'').toLowerCase(), mobile:cleanStr(row[mobKey]||''), 
           programme:cleanStr(row[progKey]||''), passYear:cleanStr(row[yrKey]||''), 
           passType:String(row[pasKey]||'').toLowerCase().includes('dual')?'Dual Entry':'Single Entry',
           checkinCount:0, lastCheckin:null,
           // Store Companion Data
           compName: cleanStr(row[cNameKey]||''),
           compEmail: cleanStr(row[cEmlKey]||''),
-          compMobile: cleanStr(row[cMobKey]||''),
-          compAlumni: cleanStr(row[cAlumKey]||''),
-          compSchool: cleanStr(row[cSchKey]||''),
-          compYear: cleanStr(row[cYrKey]||''),
-          compDegree: cleanStr(row[cDegKey]||'')
+          compMobile: cleanStr(row[cMobKey]||'')
         });
         added++;
       }
@@ -686,7 +692,7 @@ window.handleFile = async function(e){
 
 window.addManual = async function(){
   const uid=cleanStr(document.getElementById('add-uid').value); const name=cleanStr(document.getElementById('add-name').value);
-  const email=cleanStr(document.getElementById('add-email').value); const mobile=cleanStr(document.getElementById('add-mobile').value);
+  const email=cleanStr(document.getElementById('add-email').value).toLowerCase(); const mobile=cleanStr(document.getElementById('add-mobile').value);
   const programme=document.getElementById('add-programme').value; const year=document.getElementById('add-year').value;
   const passType=document.getElementById('add-passtype').value;
   
@@ -824,10 +830,6 @@ window.processScan = async function(raw){
     if(document.getElementById('comp-modal')) return; 
     
     const isCompanionOnly = (currentCount === 1);
-    const isAlumDefault = guest.compAlumni === 'No' ? 'No' : 'Yes';
-    const showAlumFields = isAlumDefault === 'Yes' ? 'block' : 'none';
-
-    const opts = `<option value="">Select...</option><option value="SOFD">SOFD</option><option value="SODM">SODM</option><option value="SOA">SOA</option><option value="SOC">SOC</option><option value="SODS">SODS</option><option value="SOJMC">SOJMC</option><option value="SOSP">SOSP</option><option value="SOID">SOID</option><option value="SOFA">SOFA</option><option value="SOM">SOM</option><option value="SOPA">SOPA</option><option value="SOPARE">SOPARE</option><option value="SOHT">SOHT</option><option value="SOW">SOW</option>`;
 
     const m = document.createElement('div'); m.id = 'comp-modal';
     m.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6); z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);';
@@ -846,21 +848,6 @@ window.processScan = async function(raw){
         
         <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;font-weight:700;">Mobile No. (10-digits) *</label>
         <input type="tel" id="cm-mobile" value="${window.esc(guest.compMobile || '')}" style="width:100%;padding:10px 12px;margin-bottom:16px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);outline:none;">
-        
-        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;font-weight:700;">Is Guest an Alumni? *</label>
-        <select id="cm-alumni" onchange="document.getElementById('cm-alumni-fields').style.display = this.value === 'Yes' ? 'block' : 'none';" style="width:100%;padding:10px 12px;margin-bottom:12px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);outline:none;">
-          <option value="Yes" ${isAlumDefault === 'Yes' ? 'selected' : ''}>Yes, Alumni</option>
-          <option value="No" ${isAlumDefault === 'No' ? 'selected' : ''}>No, Non-Alumni</option>
-        </select>
-        
-        <div id="cm-alumni-fields" style="display:${showAlumFields};">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-            <div><label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;font-weight:700;">School *</label><select id="cm-school" style="width:100%;padding:10px 12px;margin-bottom:12px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);outline:none;">${opts}</select></div>
-            <div><label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;font-weight:700;">Passing Year *</label><input type="number" id="cm-year" value="${window.esc(guest.compYear || '')}" style="width:100%;padding:10px 12px;margin-bottom:12px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);outline:none;"></div>
-          </div>
-          <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;font-weight:700;">Degree Type *</label>
-          <select id="cm-degree" style="width:100%;padding:10px 12px;margin-bottom:16px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);outline:none;"><option value="UG">UG</option><option value="PG">PG</option><option value="DIP">DIP</option></select>
-        </div>
 
         <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px;">
           ${!isCompanionOnly ? `<button id="cm-primary-only" style="padding:12px;border-radius:8px;border:2px solid var(--navy);background:transparent;color:var(--navy);font-weight:800;cursor:pointer; transition:all 0.2s;">Check In Primary ONLY (Guest arrives later)</button>` : ''}
@@ -872,9 +859,6 @@ window.processScan = async function(raw){
       </div>
     `;
     document.body.appendChild(m); 
-    
-    if(guest.compSchool) document.getElementById('cm-school').value = guest.compSchool;
-    if(guest.compDegree) document.getElementById('cm-degree').value = guest.compDegree;
 
     document.getElementById('cm-cancel').onclick = () => { document.body.removeChild(m); resBox.className = 'scan-result'; };
     if (!isCompanionOnly) document.getElementById('cm-primary-only').addEventListener('mouseover', function(){this.style.background='var(--navy)'; this.style.color='#fff';});
@@ -896,11 +880,8 @@ window.processScan = async function(raw){
 
     document.getElementById('cm-submit').onclick = async () => {
       const cName = document.getElementById('cm-name').value.trim(); const cEmail = document.getElementById('cm-email').value.trim(); const cMobile = document.getElementById('cm-mobile').value.trim();
-      const isAlumni = document.getElementById('cm-alumni').value;
-      const cSchool = isAlumni === 'Yes' ? document.getElementById('cm-school').value : 'N/A'; const cYear = isAlumni === 'Yes' ? document.getElementById('cm-year').value.trim() : 'N/A'; const cDegree = isAlumni === 'Yes' ? document.getElementById('cm-degree').value : 'N/A';
 
       if(!cName || !cEmail || !cMobile) { alert("Name, Email, and Mobile are mandatory!"); return; }
-      if(isAlumni === 'Yes' && (!cSchool || !cYear)) { alert("School and Year are mandatory for Alumni!"); return; }
       if(!valEmail(cEmail)) { alert("Invalid Email format!"); return; }
       if(!valMob(cMobile)) { alert("Mobile must be exactly 10 digits!"); return; }
       document.body.removeChild(m);
@@ -912,14 +893,14 @@ window.processScan = async function(raw){
       
       await updateDoc(doc(db, "guests", guest.uid), { 
         checkinCount: 2, lastCheckin: new Date().toISOString(),
-        compName: cName, compEmail: cEmail, compMobile: cMobile, compAlumni: isAlumni, compSchool: cSchool, compYear: cYear, compDegree: cDegree
+        compName: cName, compEmail: cEmail, compMobile: cMobile
       });
       
       let log1 = null;
       if (!isCompanionOnly) { log1 = await window.logToFirebase(guest, 'checked_in'); }
       
       let log2 = null;
-      try { const d = await addDoc(collection(db, "log"), { uid: guest.uid + "-GUEST", name: cName, degree: cDegree, school: cSchool, passYear: cYear, email: cEmail, mobile: cMobile, passType: "Companion Entry", type: "checked_in", time: new Date().toISOString() }); log2 = d.id; } catch(e) { console.error(e); }
+      try { const d = await addDoc(collection(db, "log"), { uid: guest.uid + "-GUEST", name: cName, programme: 'N/A', passYear: 'N/A', email: cEmail, mobile: cMobile, passType: "Companion Entry", type: "checked_in", time: new Date().toISOString() }); log2 = d.id; } catch(e) { console.error(e); }
       
       triggerUndo(guest, isCompanionOnly ? 1 : 2, [log1, log2]);
     };
@@ -932,8 +913,8 @@ window.processScan = async function(raw){
   triggerUndo(guest, 1, [logId]);
 }
 
-window.logToFirebase = async function(g, type){ try { const d = await addDoc(collection(db, "log"), { uid: g.uid || 'Unknown', name: g.name || 'Unknown', degree: g.degree || '', passType: g.passType || '', type, time: new Date().toISOString() }); return d.id; } catch(e) { console.error(e); return null; } }
-function showDetailGrid(g){ const dual=window.isDual(g); document.getElementById('res-detail').innerHTML=`<div class="scan-info-item"><div class="scan-info-lbl">Unique ID</div><div class="scan-info-val" style="font-family:monospace;font-size:11px">${window.esc(g.uid)}</div></div><div class="scan-info-item"><div class="scan-info-lbl">Degree</div><div class="scan-info-val">${window.esc(g.degree||'—')}</div></div><div class="scan-info-item"><div class="scan-info-lbl">Pass Type</div><div class="scan-info-val" style="color:${dual?'var(--blue)':'var(--accent)'}">${window.esc(g.passType)}</div></div><div class="scan-info-item"><div class="scan-info-lbl">Entries Used</div><div class="scan-info-val">${g.checkinCount||0} / ${dual?2:1}</div></div>`; }
+window.logToFirebase = async function(g, type){ try { const d = await addDoc(collection(db, "log"), { uid: g.uid || 'Unknown', name: g.name || 'Unknown', programme: g.programme || '', passYear: g.passYear || '', passType: g.passType || '', type, time: new Date().toISOString() }); return d.id; } catch(e) { console.error(e); return null; } }
+function showDetailGrid(g){ const dual=window.isDual(g); document.getElementById('res-detail').innerHTML=`<div class="scan-info-item"><div class="scan-info-lbl">Unique ID</div><div class="scan-info-val" style="font-family:monospace;font-size:11px">${window.esc(g.uid)}</div></div><div class="scan-info-item"><div class="scan-info-lbl">Programme</div><div class="scan-info-val">${window.esc(g.programme||'—')}</div></div><div class="scan-info-item"><div class="scan-info-lbl">Pass Type</div><div class="scan-info-val" style="color:${dual?'var(--blue)':'var(--accent)'}">${window.esc(g.passType)}</div></div><div class="scan-info-item"><div class="scan-info-lbl">Entries Used</div><div class="scan-info-val">${g.checkinCount||0} / ${dual?2:1}</div></div>`; }
 function vibrate(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
 
 function triggerUndo(guest, incrementCount, logIds) {
@@ -961,7 +942,7 @@ window.executeUndo = async function() {
 
 window.renderRecentScans = function(){ const el=document.getElementById('recent-scans'); if(!window.recentScans.length){el.innerHTML='<div class="empty" style="padding:12px 0">No scans yet.</div>';return;} const cls={checked_in:'badge-green',duplicate:'badge-amber',not_found:'badge-red'}; const lbl={checked_in:'✓ OK',duplicate:'⚠ Dup',not_found:'✕ Miss'}; el.innerHTML=window.recentScans.map(s=>`<div class="log-item"><span class="log-time">${window.fmtTime(s.time)}</span><span class="log-name">${window.esc(s.g.name)}<span style="color:var(--text3);font-size:9px;"> ${window.esc(s.g.uid||'')}</span></div><span class="badge ${cls[s.type]}" style="font-size:10px;">${lbl[s.type]}</span></div>`).join(''); }
 window.renderLog = function(){ const q=(document.getElementById('log-search').value||'').toLowerCase(); const f=document.getElementById('log-filter').value; const el=document.getElementById('log-list'); if(window.entryLog.length === 0){ el.innerHTML='<div class="empty">No entries yet.</div>'; return; } const filtered = window.entryLog.filter(l => (!q || (l.name || '').toLowerCase().includes(q) || (l.uid || '').toLowerCase().includes(q)) && (!f || l.type === f)); if(!filtered.length){el.innerHTML='<div class="empty">No matches found for your search.</div>';return;} const labels={checked_in:'In',duplicate:'Dup',not_found:'Miss'}; const cls={checked_in:'avatar-blue',duplicate:'avatar-gray',not_found:'avatar-red'}; el.innerHTML=filtered.map(l=>`<div class="log-item"><div class="guest-avatar ${cls[l.type]}">${window.esc(window.initials(l.name))}</div><div class="guest-info"><div class="guest-name">${window.esc(l.name)}</div><div class="guest-meta">${window.fmtTime(l.time)} · ${window.esc(l.uid)}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><span class="badge ${window.isDual({passType:l.passType})?'badge-blue':'badge-red'}">${window.isDual({passType:l.passType})?'D':'S'}</span><span class="badge ${l.type==='checked_in'?'badge-green':(l.type==='not_found'?'badge-red':'badge-amber')}">${labels[l.type]}</span></div></div>`).join(''); }
-window.exportLog = function(){ if(!window.entryLog.length){window.showToast('No entries yet');return;} const rows=[['Time','Name','Unique ID','School','Passing Year','Degree','Email','Mobile','Pass Type','Event'], ...window.entryLog.map(l=>[new Date(l.time).toLocaleString(),l.name,l.uid,l.school||'',l.passYear||'',l.degree,l.email||'',l.mobile||'',l.passType,l.type])]; const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n'); const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='entry_log_'+new Date().toISOString().substr(0,10)+'.csv';a.click(); }
+window.exportLog = function(){ if(!window.entryLog.length){window.showToast('No entries yet');return;} const rows=[['Time','Name','Unique ID','Programme','Passing Year','Email','Mobile','Pass Type','Event'], ...window.entryLog.map(l=>[new Date(l.time).toLocaleString(),l.name,l.uid,l.programme||'',l.passYear||'',l.email||'',l.mobile||'',l.passType,l.type])]; const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n'); const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='entry_log_'+new Date().toISOString().substr(0,10)+'.csv';a.click(); }
 window.showToast = function(msg){ let t=document.getElementById('toast'); if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(2,44,34,0.9);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.1);color:#ffffff;padding:12px 20px;border-radius:99px;font-size:13px;font-weight:700;z-index:999;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap;box-shadow:0 10px 25px rgba(0,0,0,0.2);';document.body.appendChild(t);} t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)'; clearTimeout(window._tt); window._tt=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)';},2500); }
 
 const dz=document.getElementById('drop-zone'); dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');}); dz.addEventListener('dragleave',()=>dz.classList.remove('drag')); dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');const f=e.dataTransfer.files[0];if(f)window.handleFile({target:{files:[f]}});});
