@@ -5,22 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Self Check-In</title>
 <style>
+/* 🌿 PREMIUM GREEN THEME 🌿 */
 :root{ 
-  --bg: #f3f4f6; --bg2: #ffffff; --bg3: #f9fafb;
-  --border: #e5e7eb; --border2: #d1d5db; 
-  --text: #111827; --text2: #4b5563; 
-  --accent: #dc2626; --navy: #1e3a8a;   
-  --green: #059669; --amber: #d97706;
-  --radius: 12px; --radius-sm: 8px;
+  --bg: #f0fdf4; 
+  --bg2: #ffffff; 
+  --bg3: #f8fafc;
+  --border: #e2e8f0; 
+  --border2: #cbd5e1; 
+  --text: #0f172a; 
+  --text2: #475569; 
+  --accent: #059669; 
+  --navy: #022c22;   
+  --green: #10b981; 
+  --amber: #d97706;
+  --radius: 12px; 
+  --radius-sm: 8px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
-.container{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:30px 24px;width:100%;max-width:440px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.08); position:relative; overflow:hidden;}
+.container{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:30px 24px;width:100%;max-width:440px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.05); position:relative; overflow:hidden;}
 h1{font-size:24px;font-weight:800;margin-bottom:8px;color:var(--navy);}
 p{font-size:14px;color:var(--text2);margin-bottom:24px;line-height:1.5;}
 
 input,select{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-size:14px;padding:12px;outline:none;transition:all 0.2s;}
-input:focus,select:focus{border-color:var(--navy);background:#ffffff;box-shadow:0 0 0 3px rgba(30,58,138,0.1);}
+input:focus,select:focus{border-color:var(--navy);background:#ffffff;box-shadow:0 0 0 3px rgba(2,44,34,0.1);}
 input.has-error, select.has-error { border-color: var(--accent) !important; background: #fef2f2 !important; }
 
 .error-text { color: var(--accent); font-size: 11px; font-weight: 600; text-align: left; margin: 4px 0 12px 4px; display: block; min-height: 14px; }
@@ -32,9 +40,9 @@ input.has-error, select.has-error { border-color: var(--accent) !important; back
 .btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2);margin-top:12px;}
 
 .result-card{display:none;padding:10px 0;}
-.success-bg { background: #d1fae5; border: 1px solid rgba(5,150,105,0.3); }
+.success-bg { background: #d1fae5; border: 1px solid rgba(16,185,129,0.3); }
 .dup-bg { background: #fef3c7; border: 1px solid rgba(217,119,6,0.3); }
-.fail-bg { background: #fef2f2; border: 1px solid rgba(220,38,38,0.3); }
+.fail-bg { background: #fef2f2; border: 1px solid rgba(239,68,68,0.3); }
 .result-icon{font-size:54px;margin-bottom:10px;}
 
 #companion-fields{display:none;text-align:left; animation: fadeIn 0.3s ease;}
@@ -82,8 +90,8 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:6px;font-wei
 
   <div id="companion-fields">
     <div class="section-title">2nd Guest Details (Dual Pass)</div>
-    <div id="comp-alert" style="display:none;background:#dbeafe;border:1px solid rgba(37,99,235,0.3);padding:10px;border-radius:8px;font-size:12px;color:#1e3a8a;margin-bottom:16px;text-align:center;font-weight:600;">
-      Dual Pass detected! Please provide your guest's full details.
+    <div id="comp-alert" style="display:none;background:#e0f2fe;border:1px solid rgba(14,165,233,0.3);padding:10px;border-radius:8px;font-size:12px;color:#0284c7;margin-bottom:16px;text-align:center;font-weight:600;">
+      Dual Pass detected! Please confirm your guest's details.
     </div>
 
     <div class="form-group"><label>Guest Name *</label><input type="text" id="comp-name" placeholder="Guest Full Name" oninput="clearErr(this)"><span class="error-text" id="comp-name-err"></span></div>
@@ -115,9 +123,9 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:6px;font-wei
 
 <div class="container result-card fail-bg" id="not-found-card">
   <div class="success-icon">❌</div>
-  <h1 style="color:var(--accent)">Not Registered</h1>
+  <h1 style="color:#ef4444">Not Registered</h1>
   <p style="margin-bottom:0;color:#991b1b;font-weight:600;">We couldn't find a matching ticket for this email or ID.<br><br>Please approach the Registration Desk for manual on-spot registration after paying the registration fee.</p>
-  <button class="btn" style="background:var(--accent);margin-top:20px;" onclick="resetForm()">Try Another ID</button>
+  <button class="btn" style="background:#ef4444;margin-top:20px;" onclick="resetForm()">Try Another ID</button>
 </div>
 
 <div class="container result-card success-bg" id="success-card">
@@ -153,15 +161,15 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:6px;font-wei
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.0/firebase-app.js";
 import { getFirestore, collection, doc, getDocs, updateDoc, addDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/12.2.0/firebase-firestore.js";
 
+// REPLACE THIS CONFIG BLOCK WITH YOUR NEW "ONLINE-EVENT-PASS" KEYS
 const firebaseConfig = {
-    apiKey: "AIzaSyCq5rmox4ET5jA_rWmXw3y5TCIQ3VLS_S0",
-    authDomain: "online-event-pass.firebaseapp.com",
-    projectId: "online-event-pass",
-    storageBucket: "online-event-pass.firebasestorage.app",
-    messagingSenderId: "480642479322",
-    appId: "1:480642479322:web:524e5488548e3cb91d21e3",
-    measurementId: "G-VLNFRQ5DQW"
-  };
+  apiKey: "AIzaSyAHoI1PZqsf_6UojNsgDFqSaQ_00I27onw",
+  authDomain: "scanner-system-32692.firebaseapp.com",
+  projectId: "scanner-system-32692",
+  storageBucket: "scanner-system-32692.firebasestorage.app",
+  messagingSenderId: "517388530229",
+  appId: "1:517388530229:web:418d4e80fce9bfa931f77c"
+};
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -208,13 +216,12 @@ onSnapshot(doc(db, "config", "eventDetails"), (snap) => {
   }
 });
 
-// ── NEW: PRIMARY ONLY CHECK-IN (Self-Serve) ──
 window.handlePrimaryOnly = async function() {
   if(!foundGuestTemp || !foundDocIdTemp) return;
   setLoading(true);
   try {
     await updateDoc(doc(db, "guests", foundDocIdTemp), { checkinCount: 1, lastCheckin: new Date().toISOString() });
-    await addDoc(collection(db, "log"), { uid: foundGuestTemp.uid, name: foundGuestTemp.name, degree: foundGuestTemp.degree, school: foundGuestTemp.school||'', passYear: foundGuestTemp.passYear||'', email: foundGuestTemp.email||'', mobile: foundGuestTemp.mobile||'', passType: foundGuestTemp.passType, type: "checked_in", time: new Date().toISOString() });
+    await addDoc(collection(db, "log"), { uid: foundGuestTemp.uid, name: foundGuestTemp.name, programme: foundGuestTemp.programme||'', passYear: foundGuestTemp.passYear||'', email: foundGuestTemp.email||'', mobile: foundGuestTemp.mobile||'', passType: foundGuestTemp.passType, type: "checked_in", time: new Date().toISOString() });
     showSuccess(foundGuestTemp.name, 'Primary Only (1 of 2)');
   } catch(e) { throwErr('lookup-input', 'Network error. Try again.'); setLoading(false); }
 }
@@ -250,11 +257,14 @@ window.handleAction = async function() {
     const isCompanionOnly = (count === 1);
 
     try {
-      await updateDoc(doc(db, "guests", foundDocIdTemp), { checkinCount: 2, lastCheckin: new Date().toISOString() });
+      // Update DB with the confirmed companion info
+      await updateDoc(doc(db, "guests", foundDocIdTemp), { 
+        checkinCount: 2, lastCheckin: new Date().toISOString(),
+        compName: cName, compEmail: cEmail, compMobile: cMobile, compAlumni: isAlum, compSchool: cSchool, compYear: cYear, compDegree: cDegree
+      });
       
-      // Only log the primary if this is their first scan
       if (count === 0) {
-        await addDoc(collection(db, "log"), { uid: foundGuestTemp.uid, name: foundGuestTemp.name, degree: foundGuestTemp.degree, school: foundGuestTemp.school||'', passYear: foundGuestTemp.passYear||'', email: foundGuestTemp.email||'', mobile: foundGuestTemp.mobile||'', passType: foundGuestTemp.passType, type: "checked_in", time: new Date().toISOString() });
+        await addDoc(collection(db, "log"), { uid: foundGuestTemp.uid, name: foundGuestTemp.name, programme: foundGuestTemp.programme||'', passYear: foundGuestTemp.passYear||'', email: foundGuestTemp.email||'', mobile: foundGuestTemp.mobile||'', passType: foundGuestTemp.passType, type: "checked_in", time: new Date().toISOString() });
       }
       
       await addDoc(collection(db, "log"), { uid: foundGuestTemp.uid+"-GUEST", name: cName, degree: cDegree, school: cSchool, passYear: cYear, email: cEmail, mobile: cMobile, passType: "Companion Entry", type: "checked_in", time: new Date().toISOString() });
@@ -263,11 +273,11 @@ window.handleAction = async function() {
     } catch(e) { throwErr('lookup-input', 'Network error.'); setLoading(false); }
 
   } else {
-    // ── NORMAL LOOKUP (Query exactly, no full scan) ──
+    // ── NORMAL LOOKUP (Case Insensitive Full Scan Fix) ──
     try {
       const searchVal = lookupVal.toLowerCase();
       let snap = await getDocs(query(collection(db, "guests"), where("uid", "==", lookupVal))); // Exact UID check
-      if(snap.empty) snap = await getDocs(query(collection(db, "guests"), where("email", "==", searchVal))); // Case insensitive Email check
+      if(snap.empty) snap = await getDocs(query(collection(db, "guests"), where("email", "==", searchVal))); // Exact Email check
 
       if (!snap.empty) {
         foundGuestTemp = snap.docs[0].data(); 
@@ -284,13 +294,25 @@ window.handleAction = async function() {
 
         if (dual && count === 0) {
              document.getElementById('companion-fields').style.display = 'block';
-             document.getElementById('comp-alert').textContent = "Dual Pass detected! Please provide your guest's full details.";
+             document.getElementById('comp-alert').textContent = "Dual Pass detected! Please confirm your guest's details.";
              document.getElementById('comp-alert').style.display = 'block';
              document.getElementById('instruction-text').style.display = 'none';
              document.getElementById('lookup-input').disabled = true;
-             
              document.getElementById('primary-only-btn').style.display = 'block';
              
+             // Pre-fill Companion Data if it exists
+             if(foundGuestTemp.compName) document.getElementById('comp-name').value = foundGuestTemp.compName;
+             if(foundGuestTemp.compEmail) document.getElementById('comp-email').value = foundGuestTemp.compEmail;
+             if(foundGuestTemp.compMobile) document.getElementById('comp-mobile').value = foundGuestTemp.compMobile;
+             
+             const isAlumDefault = foundGuestTemp.compAlumni === 'No' ? 'No' : 'Yes';
+             document.getElementById('comp-alumni').value = isAlumDefault;
+             document.getElementById('comp-alumni-wrap').style.display = isAlumDefault === 'Yes' ? 'block' : 'none';
+             
+             if(foundGuestTemp.compSchool) document.getElementById('comp-school').value = foundGuestTemp.compSchool;
+             if(foundGuestTemp.compYear) document.getElementById('comp-year').value = foundGuestTemp.compYear;
+             if(foundGuestTemp.compDegree) document.getElementById('comp-degree').value = foundGuestTemp.compDegree;
+
              const btn = document.getElementById('action-btn');
              btn.setAttribute('data-default', 'Check In Both');
              setLoading(false); return;
@@ -298,10 +320,23 @@ window.handleAction = async function() {
 
         if (dual && count === 1) {
              document.getElementById('companion-fields').style.display = 'block';
-             document.getElementById('comp-alert').textContent = "You are already checked in. Please provide your guest's details.";
+             document.getElementById('comp-alert').textContent = "You are already checked in. Please confirm your guest's details.";
              document.getElementById('comp-alert').style.display = 'block';
              document.getElementById('instruction-text').style.display = 'none';
              document.getElementById('lookup-input').disabled = true;
+             
+             // Pre-fill Companion Data if it exists
+             if(foundGuestTemp.compName) document.getElementById('comp-name').value = foundGuestTemp.compName;
+             if(foundGuestTemp.compEmail) document.getElementById('comp-email').value = foundGuestTemp.compEmail;
+             if(foundGuestTemp.compMobile) document.getElementById('comp-mobile').value = foundGuestTemp.compMobile;
+             
+             const isAlumDefault = foundGuestTemp.compAlumni === 'No' ? 'No' : 'Yes';
+             document.getElementById('comp-alumni').value = isAlumDefault;
+             document.getElementById('comp-alumni-wrap').style.display = isAlumDefault === 'Yes' ? 'block' : 'none';
+             
+             if(foundGuestTemp.compSchool) document.getElementById('comp-school').value = foundGuestTemp.compSchool;
+             if(foundGuestTemp.compYear) document.getElementById('comp-year').value = foundGuestTemp.compYear;
+             if(foundGuestTemp.compDegree) document.getElementById('comp-degree').value = foundGuestTemp.compDegree;
              
              const btn = document.getElementById('action-btn');
              btn.setAttribute('data-default', 'Check In Guest');
@@ -310,11 +345,11 @@ window.handleAction = async function() {
 
         // Standard Single Check in
         await updateDoc(doc(db, "guests", foundDocIdTemp), { checkinCount: 1, lastCheckin: new Date().toISOString() });
-        await addDoc(collection(db, "log"), { uid: foundGuestTemp.uid, name: foundGuestTemp.name, degree: foundGuestTemp.degree, school: foundGuestTemp.school||'', passYear: foundGuestTemp.passYear||'', email: foundGuestTemp.email||'', mobile: foundGuestTemp.mobile||'', passType: foundGuestTemp.passType, type: "checked_in", time: new Date().toISOString() });
+        await addDoc(collection(db, "log"), { uid: foundGuestTemp.uid, name: foundGuestTemp.name, programme: foundGuestTemp.programme||'', passYear: foundGuestTemp.passYear||'', email: foundGuestTemp.email||'', mobile: foundGuestTemp.mobile||'', passType: foundGuestTemp.passType, type: "checked_in", time: new Date().toISOString() });
         showSuccess(foundGuestTemp.name, foundGuestTemp.passType);
         
       } else {
-        // NOT FOUND -> Show Red Warning Card (NO Spot Registration Allowed)
+        // NOT FOUND -> Show Red Fail Card
         document.getElementById('main-card').style.display = 'none';
         document.getElementById('not-found-card').style.display = 'block';
         setLoading(false);
