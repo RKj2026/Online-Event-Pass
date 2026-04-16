@@ -8,15 +8,23 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>EventPass — Gate Operations</title>
 <style>
+/* 🌿 PREMIUM GREEN THEME 🌿 */
 :root{
-  --bg: #f3f4f6; --bg2: #ffffff; --bg3: #f9fafb; 
-  --border: #e5e7eb; --border2: #d1d5db; 
-  --text: #111827; --text2: #4b5563; --text3: #6b7280; 
-  --accent: #dc2626; --accent-hover: #b91c1c; --navy: #1e3a8a; 
-  --green: #059669; --green-bg: #d1fae5;
+  --bg: #f0fdf4;         /* Very soft green-tinted background */
+  --bg2: #ffffff; 
+  --bg3: #f8fafc; 
+  --border: #e2e8f0; 
+  --border2: #cbd5e1; 
+  --text: #0f172a; 
+  --text2: #475569; 
+  --text3: #64748b; 
+  --accent: #059669;     /* Premium Emerald Green */
+  --accent-hover: #047857;
+  --navy: #022c22;       /* Deep Forest Green (Replaces Navy) */
+  --green: #10b981; --green-bg: #d1fae5;
   --amber: #d97706; --amber-bg: #fef3c7;
-  --red: #dc2626; --red-bg: #fee2e2;
-  --blue: #2563eb; --blue-bg: #dbeafe;
+  --red: #ef4444; --red-bg: #fee2e2;
+  --blue: #0ea5e9; --blue-bg: #e0f2fe;
   --radius: 12px; --radius-sm: 8px;
   --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
 }
@@ -53,7 +61,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .card-title{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:11px;}
 
 .upload-zone{border:1.5px dashed var(--border2);border-radius:var(--radius);padding:22px 14px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--bg3);}
-.upload-zone:hover,.upload-zone.drag{border-color:var(--navy);background:#f0f4ff;}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--navy);background:#e6f4ea;}
 .upload-icon{font-size:28px;margin-bottom:6px;}
 .upload-zone h3{font-size:13px;font-weight:700;margin-bottom:3px;color:var(--navy);}
 
@@ -153,7 +161,6 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:4px;font-wei
 .search-wrap input{padding-left:32px;background:#ffffff;}
 .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text3);pointer-events:none;}
 
-/* Undo Toast */
 #undo-toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(100px); background: #111827; color: #fff; padding: 10px 16px; border-radius: 99px; font-size: 13px; font-weight: 600; z-index: 9999; display: flex; align-items: center; gap: 12px; opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
 #undo-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 #undo-btn { background: rgba(255,255,255,0.2); color: #fff; border: none; padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 800; cursor: pointer; text-transform: uppercase; }
@@ -201,35 +208,36 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:4px;font-wei
         <div class="upload-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
           <div class="upload-icon">📋</div>
           <h3>Upload Attendee List</h3>
-          <p>Excel (.xlsx) or CSV<br>Columns: <strong>ID · Name · Degree · School · Year · Email · Mobile · Pass Type</strong></p>
+          <p>Excel (.xlsx) or CSV<br>Columns: <strong>ID · Name · Degree · School · Year · Email · Mobile · Pass Type</strong><br><span style="font-size:10px;color:var(--accent);">Pro-Tip: Include columns like 'Guest Name' or 'Guest Email' to pre-fill Dual Pass details!</span></p>
           <input type="file" id="file-input" accept=".xlsx,.csv" style="display:none" onchange="handleFile(event)">
         </div>
       </div>
       <div class="card">
         <div class="card-title">Add Manually</div>
         <div class="form-row cols2">
-          <div><label>Unique ID *</label><input type="text" id="add-uid" placeholder="e.g. 2024UG001"></div>
+          <div><label>Unique ID *</label><input type="text" id="add-uid" placeholder="e.g. 2026-001"></div>
           <div><label>Full Name *</label><input type="text" id="add-name" placeholder="Full name"></div>
-        </div>
-        <div class="form-row cols2">
-          <div><label>School *</label>
-            <select id="add-school">
-              <option value="">Select School...</option><option value="SOFD">SOFD</option><option value="SODM">SODM</option><option value="SOA">SOA</option><option value="SOC">SOC</option><option value="SODS">SODS</option><option value="SOJMC">SOJMC</option><option value="SOSP">SOSP</option><option value="SOID">SOID</option><option value="SOFA">SOFA</option><option value="SOM">SOM</option><option value="SOPA">SOPA</option><option value="SOPARE">SOPARE</option><option value="SOHT">SOHT</option><option value="SOW">SOW</option>
-            </select>
-          </div>
-          <div><label>Passing Year *</label><input type="number" id="add-year" placeholder="e.g. 2025"></div>
-        </div>
-        <div class="form-row cols2">
-          <div><label>Degree Type *</label>
-            <select id="add-degree"><option value="UG">UG</option><option value="PG">PG</option><option value="DIP">DIP</option></select>
-          </div>
-          <div><label>Pass Type *</label>
-            <select id="add-passtype"><option value="Single Entry">Single Entry</option><option value="Dual Entry">Dual Entry</option></select>
-          </div>
         </div>
         <div class="form-row cols2">
           <div><label>Email ID *</label><input type="email" id="add-email" placeholder="Valid email"></div>
           <div><label>Mobile No. *</label><input type="tel" id="add-mobile" placeholder="10-digit number"></div>
+        </div>
+        <div class="form-row cols2">
+          <div><label>Programme *</label>
+            <select id="add-programme">
+              <option value="">Select Programme...</option><option value="Undergraduate (UG)">Undergraduate (UG)</option><option value="Postgraduate (PG)">Postgraduate (PG)</option><option value="Diploma">Diploma</option><option value="Certificate">Certificate</option>
+            </select>
+          </div>
+          <div><label>Passing Year *</label>
+            <select id="add-year">
+              <option value="">Select Year...</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row cols2">
+          <div style="grid-column: span 2;"><label>Pass Type *</label>
+            <select id="add-passtype"><option value="Single Entry">Single Entry</option><option value="Dual Entry">Dual Entry</option></select>
+          </div>
         </div>
         <button class="btn btn-primary btn-full" onclick="addManual()" style="margin-top:4px">+ Add Attendee</button>
       </div>
@@ -247,8 +255,8 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:4px;font-wei
       <div class="card">
         <div class="card-title">Event Details</div>
         <div class="form-row cols2">
-          <div><label>Event Name *</label><input type="text" id="evt-name" value="Convocation 2025" oninput="scheduleRebuild()"></div>
-          <div><label>Event Date *</label><input type="text" id="evt-date" placeholder="e.g. 15 April 2025" oninput="scheduleRebuild()"></div>
+          <div><label>Event Name *</label><input type="text" id="evt-name" value="Online Event Pass" oninput="scheduleRebuild()"></div>
+          <div><label>Event Date *</label><input type="text" id="evt-date" placeholder="e.g. 15 April 2026" oninput="scheduleRebuild()"></div>
         </div>
         <div class="form-row cols2">
           <div><label>Event Time</label><input type="text" id="evt-time" placeholder="e.g. 10:00 AM – 1:00 PM" oninput="scheduleRebuild()"></div>
@@ -368,15 +376,15 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.0/firebas
 import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, query, orderBy, writeBatch, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.2.0/firebase-firestore.js";
 
 // ══ FIREBASE INIT ══════════════════════════════════════════════════
+// REPLACE THIS CONFIG BLOCK WITH YOUR NEW "ONLINE-EVENT-PASS" KEYS
 const firebaseConfig = {
-    apiKey: "AIzaSyCq5rmox4ET5jA_rWmXw3y5TCIQ3VLS_S0",
-    authDomain: "online-event-pass.firebaseapp.com",
-    projectId: "online-event-pass",
-    storageBucket: "online-event-pass.firebasestorage.app",
-    messagingSenderId: "480642479322",
-    appId: "1:480642479322:web:524e5488548e3cb91d21e3",
-    measurementId: "G-VLNFRQ5DQW"
-  };
+  apiKey: "AIzaSyAHoI1PZqsf_6UojNsgDFqSaQ_00I27onw",
+  authDomain: "scanner-system-32692.firebaseapp.com",
+  projectId: "scanner-system-32692",
+  storageBucket: "scanner-system-32692.firebasestorage.app",
+  messagingSenderId: "517388530229",
+  appId: "1:517388530229:web:418d4e80fce9bfa931f77c"
+};
 const app = initializeApp(firebaseConfig); 
 const db = getFirestore(app);
 
@@ -454,24 +462,15 @@ window.switchTab = function(el,name){
 }
 
 function updateStats(){
-  let totalCapacity = 0;
-  let totalCheckedIn = 0;
-  let singleCount = 0;
-  let dualCount = 0;
-
+  let totalCapacity = 0; let totalCheckedIn = 0; let singleCount = 0; let dualCount = 0;
   window.guests.forEach(g => {
-    const dual = window.isDual(g);
-    totalCapacity += dual ? 2 : 1;
-    totalCheckedIn += (g.checkinCount || 0);
+    const dual = window.isDual(g); totalCapacity += dual ? 2 : 1; totalCheckedIn += (g.checkinCount || 0);
     if(dual) dualCount++; else singleCount++;
   });
-
   const pct = totalCapacity > 0 ? Math.round((totalCheckedIn / totalCapacity) * 100) : 0;
-  
   if(document.getElementById('p-checked')) document.getElementById('p-checked').innerHTML = `${totalCheckedIn} <span>/ ${totalCapacity} checked in</span>`;
   if(document.getElementById('p-pct')) document.getElementById('p-pct').textContent = `${pct}%`;
   if(document.getElementById('p-bar')) document.getElementById('p-bar').style.width = `${pct}%`;
-
   if(document.getElementById('s-total')) document.getElementById('s-total').textContent = totalCapacity;
   if(document.getElementById('s-checked')) document.getElementById('s-checked').textContent = totalCheckedIn;
   if(document.getElementById('s-single')) document.getElementById('s-single').textContent = singleCount;
@@ -490,18 +489,39 @@ window.handleFile = async function(e){
       for(const row of rows) {
         const keys=Object.keys(row);
         const fk=pats=>keys.find(k=>pats.some(p=>k.toLowerCase().replace(/[\s_\-\.]/g,'').includes(p)));
-        const uidKey=fk(['uniqueid','uid','id']); const nameKey=fk(['name','fullname']);
-        const degKey=fk(['degreetype','degree','course']); const emlKey=fk(['emailid','email']);
-        const mobKey=fk(['mobileno','mobile','phone']); const pasKey=fk(['passtype','pass','entry','type']);
-        const schKey=fk(['school','college','department']); const yrKey=fk(['year','passing']);
         
+        // Primary Fields
+        const uidKey=fk(['uniqueid','uid','id']); const nameKey=fk(['name','fullname']);
+        const emlKey=fk(['emailid','email']); const mobKey=fk(['mobileno','mobile','phone']); 
+        const progKey=fk(['programme','program','course']); const yrKey=fk(['year','passing']);
+        const pasKey=fk(['passtype','pass','entry','type']); 
+        
+        // Companion Fields (For pre-filling forms)
+        const cNameKey = fk(['guestname', 'compname', 'companionname', 'guest', 'companion']);
+        const cEmlKey = fk(['guestemail', 'compemail']);
+        const cMobKey = fk(['guestmobile', 'compmobile', 'guestphone']);
+        const cAlumKey = fk(['guestalumni', 'compalumni', 'isalumni']);
+        const cSchKey = fk(['guestschool', 'compschool']);
+        const cYrKey = fk(['guestyear', 'compyear']);
+        const cDegKey = fk(['guestdegree', 'compdegree']);
+
         const name = cleanStr(row[nameKey||keys[1]]); if(!name)continue;
         const uid = cleanStr(row[uidKey||keys[0]]) || ('ATT-'+Math.random().toString(36).substr(2,6).toUpperCase());
         
         await setDoc(doc(db, "guests", uid), {
-          uid, name, degree:cleanStr(row[degKey]||'UG')||'UG', school:cleanStr(row[schKey]||''), passYear:cleanStr(row[yrKey]||''),
-          email:cleanStr(row[emlKey]||''), mobile:cleanStr(row[mobKey]||''), passType:String(row[pasKey]||'').toLowerCase().includes('dual')?'Dual Entry':'Single Entry',
-          checkinCount:0, lastCheckin:null
+          uid, name, 
+          email:cleanStr(row[emlKey]||''), mobile:cleanStr(row[mobKey]||''), 
+          programme:cleanStr(row[progKey]||''), passYear:cleanStr(row[yrKey]||''), 
+          passType:String(row[pasKey]||'').toLowerCase().includes('dual')?'Dual Entry':'Single Entry',
+          checkinCount:0, lastCheckin:null,
+          // Store Companion Data
+          compName: cleanStr(row[cNameKey]||''),
+          compEmail: cleanStr(row[cEmlKey]||''),
+          compMobile: cleanStr(row[cMobKey]||''),
+          compAlumni: cleanStr(row[cAlumKey]||''),
+          compSchool: cleanStr(row[cSchKey]||''),
+          compYear: cleanStr(row[cYrKey]||''),
+          compDegree: cleanStr(row[cDegKey]||'')
         });
         added++;
       }
@@ -513,15 +533,16 @@ window.handleFile = async function(e){
 
 window.addManual = async function(){
   const uid=cleanStr(document.getElementById('add-uid').value); const name=cleanStr(document.getElementById('add-name').value);
-  const school=document.getElementById('add-school').value; const year=cleanStr(document.getElementById('add-year').value);
   const email=cleanStr(document.getElementById('add-email').value); const mobile=cleanStr(document.getElementById('add-mobile').value);
-  const degree=document.getElementById('add-degree').value; const passType=document.getElementById('add-passtype').value;
-  if(!uid||!name||!school||!year||!email||!mobile){ window.showToast('All fields are mandatory!'); return; }
+  const programme=document.getElementById('add-programme').value; const year=document.getElementById('add-year').value;
+  const passType=document.getElementById('add-passtype').value;
+  
+  if(!uid||!name||!programme||!year||!email||!mobile){ window.showToast('All fields are mandatory!'); return; }
   if(!valEmail(email)) { window.showToast('Invalid Email ID!'); return; }
   if(!valMob(mobile)) { window.showToast('Invalid 10-digit Mobile!'); return; }
 
-  await setDoc(doc(db, "guests", uid), { uid, name, school, passYear:year, email, mobile, degree, passType, checkinCount:0, lastCheckin:null });
-  ['add-uid','add-name','add-year','add-email','add-mobile'].forEach(id=>document.getElementById(id).value=''); document.getElementById('add-school').value=''; window.showToast('Attendee added ✓');
+  await setDoc(doc(db, "guests", uid), { uid, name, email, mobile, programme, passYear:year, passType, checkinCount:0, lastCheckin:null });
+  ['add-uid','add-name','add-email','add-mobile'].forEach(id=>document.getElementById(id).value=''); document.getElementById('add-programme').value=''; document.getElementById('add-year').value=''; window.showToast('Attendee added ✓');
 }
 
 window.clearAll = async function(){ 
@@ -545,7 +566,7 @@ window.renderGuests = function(){
     const dual=window.isDual(g);
     return `<div class="guest-row">
       <div class="guest-avatar ${dual?'avatar-blue':'avatar-red'}">${window.esc(window.initials(g.name))}</div>
-      <div class="guest-info"><div class="guest-name">${window.esc(g.name)}</div><div class="guest-meta">${window.esc(g.degree)} · ${window.esc(g.school||'')} · ${window.esc(g.email||g.mobile||'—')}</div><div class="guest-uid">${window.esc(g.uid)}</div></div>
+      <div class="guest-info"><div class="guest-name">${window.esc(g.name)}</div><div class="guest-meta">${window.esc(g.programme||'—')} · ${window.esc(g.passYear||'—')} · ${window.esc(g.email||g.mobile||'—')}</div><div class="guest-uid">${window.esc(g.uid)}</div></div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;">
         <span class="badge ${dual?'badge-blue':'badge-red'}">${dual?'Dual':'Single'}</span>
         ${g.checkinCount>0?`<span class="badge badge-green">In</span>`:'<span class="badge badge-amber">Pending</span>'}
@@ -559,7 +580,7 @@ function wrap(c,txt,maxW){const words=String(txt||'').split(' '),lines=[];let li
 
 function drawPass(g,evtName,evtDate,evtTime,evtVenue,instName,instAddr,color,qrUrl,logoImg){
   const cv=document.createElement('canvas');cv.width=PW;cv.height=PH;const c=cv.getContext('2d');
-  const isBlue=color==='blue';const topClr=isBlue?'#1e3a8a':'#dc2626';const accClr=isBlue?'#2563eb':'#dc2626';
+  const isBlue=color==='blue';const topClr=isBlue?'#022c22':'#059669';const accClr=isBlue?'#0ea5e9':'#059669';
   
   c.fillStyle='#ffffff';c.fillRect(0,0,PW,PH);
   const HH=210; c.fillStyle=topClr;c.fillRect(0,0,PW,HH);
@@ -582,21 +603,21 @@ function drawPass(g,evtName,evtDate,evtTime,evtVenue,instName,instAddr,color,qrU
   const BANNER_Y=HH, BANNER_H=38;c.fillStyle=accClr;c.fillRect(0,BANNER_Y,PW,BANNER_H);c.fillStyle='#ffffff';c.font='bold 14px -apple-system,sans-serif';c.textAlign='center';c.fillText(isBlue?'✦  DUAL ENTRY PASS  ✦':'✦  SINGLE ENTRY PASS  ✦',PW/2,BANNER_Y+24);
   
   const BY=HH+BANNER_H+24; c.textAlign='left';
-  c.fillStyle='#6b7280';c.font='600 12px -apple-system,sans-serif';c.fillText('ATTENDEE NAME',PAD,BY);
-  c.fillStyle='#111827';c.font='900 34px -apple-system,sans-serif';let dn=g.name;while(c.measureText(dn).width>PW-PAD*2&&dn.length>4)dn=dn.slice(0,-1);if(dn!==g.name)dn+='…';c.fillText(dn,PAD,BY+36);
+  c.fillStyle='#64748b';c.font='600 12px -apple-system,sans-serif';c.fillText('ATTENDEE NAME',PAD,BY);
+  c.fillStyle='#0f172a';c.font='900 34px -apple-system,sans-serif';let dn=g.name;while(c.measureText(dn).width>PW-PAD*2&&dn.length>4)dn=dn.slice(0,-1);if(dn!==g.name)dn+='…';c.fillText(dn,PAD,BY+36);
   
-  const infoY=BY+65;c.strokeStyle='#e5e7eb';c.lineWidth=1;c.beginPath();c.moveTo(PAD,infoY-6);c.lineTo(PW-PAD,infoY-6);c.stroke();
-  function field(label,val,x,y,maxW){c.fillStyle='#6b7280';c.font='600 11px -apple-system,sans-serif';c.textAlign='left';c.fillText(label,x,y);c.fillStyle='#111827';c.font='700 16px -apple-system,sans-serif';let v=String(val||'—');while(c.measureText(v).width>maxW&&v.length>4)v=v.slice(0,-1);if(v!==String(val||'—'))v+='…';c.fillText(v,x,y+20);}
+  const infoY=BY+65;c.strokeStyle='#e2e8f0';c.lineWidth=1;c.beginPath();c.moveTo(PAD,infoY-6);c.lineTo(PW-PAD,infoY-6);c.stroke();
+  function field(label,val,x,y,maxW){c.fillStyle='#64748b';c.font='600 11px -apple-system,sans-serif';c.textAlign='left';c.fillText(label,x,y);c.fillStyle='#0f172a';c.font='700 16px -apple-system,sans-serif';let v=String(val||'—');while(c.measureText(v).width>maxW&&v.length>4)v=v.slice(0,-1);if(v!==String(val||'—'))v+='…';c.fillText(v,x,y+20);}
   const hw=(PW-PAD*2)/2-6;field('UNIQUE ID',g.uid,PAD,infoY+4,hw*1.6);
-  c.strokeStyle='#f3f4f6';c.lineWidth=1;c.beginPath();c.moveTo(PAD,infoY+38);c.lineTo(PW-PAD,infoY+38);c.stroke();field('EMAIL',g.email||'—',PAD,infoY+48,PW-PAD*2);
+  c.strokeStyle='#f1f5f9';c.lineWidth=1;c.beginPath();c.moveTo(PAD,infoY+38);c.lineTo(PW-PAD,infoY+38);c.stroke();field('EMAIL',g.email||'—',PAD,infoY+48,PW-PAD*2);
   c.beginPath();c.moveTo(PAD,infoY+82);c.lineTo(PW-PAD,infoY+82);c.stroke();field('MOBILE',g.mobile||'—',PAD,infoY+92,hw);
   c.beginPath();c.moveTo(PAD,infoY+126);c.lineTo(PW-PAD,infoY+126);c.stroke();
   
   const QS=280, QX=Math.round((PW-QS)/2), QY=490;
-  c.fillStyle='#f9fafb';rr(c,QX-14,QY-14,QS+28,QS+46,12);c.fill();c.strokeStyle=accClr;c.lineWidth=3;rr(c,QX-14,QY-14,QS+28,QS+46,12);c.stroke();
+  c.fillStyle='#f8fafc';rr(c,QX-14,QY-14,QS+28,QS+46,12);c.fill();c.strokeStyle=accClr;c.lineWidth=3;rr(c,QX-14,QY-14,QS+28,QS+46,12);c.stroke();
   c.fillStyle=accClr;rr(c,QX-14,QY-14,QS+28,10,12);c.fill();c.fillRect(QX-14,QY-8,QS+28,8);
   if(qrUrl){const qi=new Image();qi.onload=()=>{c.drawImage(qi,QX,QY,QS,QS);};qi.src=qrUrl;}
-  c.fillStyle='#111827';c.font='bold 16px monospace';c.textAlign='center';c.fillText(g.uid,PW/2,QY+QS+24);
+  c.fillStyle='#0f172a';c.font='bold 16px monospace';c.textAlign='center';c.fillText(g.uid,PW/2,QY+QS+24);
   
   c.fillStyle=topClr;c.fillRect(0,PH-26,PW,26);c.fillStyle='rgba(255,255,255,0.7)';c.font='10px -apple-system,sans-serif';c.textAlign='center';c.fillText(isBlue?'Valid for two entries · Not transferable':'Valid for one entry only · Not transferable',PW/2,PH-10);
   return cv;
@@ -607,10 +628,10 @@ window.saveSettingsToFirebase = async function() { const s = { evtName: document
 window.scheduleRebuild = function(){ clearTimeout(rebuildTimer); rebuildTimer=setTimeout(window.buildAllPasses,800); clearTimeout(saveTimer); saveTimer = setTimeout(window.saveSettingsToFirebase, 1500); }
 window.buildAllPasses = function(){ const grid=document.getElementById('pass-grid'); if(!window.guests.length){grid.innerHTML='<div class="empty">Import attendees first.</div>';return;} grid.innerHTML='<div class="empty" style="padding:20px">Generating passes…</div>'; const s=window.getSettings();let logoImg=null;const go=()=>genQRs(s,logoImg); if(logoDataUrl){logoImg=new Image();logoImg.onload=go;logoImg.onerror=go;logoImg.src=logoDataUrl;}else go(); }
 function genQRs(s,logoImg){ const total=window.guests.length;let done=0;const qrUrls=new Array(total).fill(''); window.guests.forEach((g,idx)=>{ const tmp=document.createElement('div');tmp.style.cssText='position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;'; document.body.appendChild(tmp); try{new QRCode(tmp,{text:g.uid,width:280,height:280,correctLevel:QRCode.CorrectLevel.M});}catch(e){} setTimeout(()=>{ const qi=tmp.querySelector('img');const qc=tmp.querySelector('canvas'); qrUrls[idx]=qi?qi.src:(qc?qc.toDataURL():'');try{document.body.removeChild(tmp);}catch(e){} if(++done===total) renderGrid(qrUrls,s,logoImg); },280); }); }
-function renderGrid(qrUrls,s,logoImg){ const grid=document.getElementById('pass-grid');grid.innerHTML=''; const container=document.createElement('div');container.className='pass-grid'; let rendered=0; window.guests.forEach((g,idx)=>{ const cv=drawPass(g,s.evtName,s.evtDate,s.evtTime,s.evtVenue,s.instName,s.instAddr,window.isDual(g)?'blue':'red',qrUrls[idx],logoImg); setTimeout(()=>{ const wrap=document.createElement('div');wrap.className='pass-card'; const strip=document.createElement('div');strip.style.cssText=`width:100%;height:5px;border-radius:4px;background:${window.isDual(g)?'#2563eb':'#dc2626'};`; wrap.appendChild(strip);cv.onclick=()=>window.dlOne(cv,g);wrap.appendChild(cv); const act=document.createElement('div');act.className='pass-actions'; act.innerHTML=`<span class="badge ${window.isDual(g)?'badge-blue':'badge-red'}" style="flex:0;padding:5px 8px;">${window.isDual(g)?'Dual':'Single'}</span> <button class="btn btn-ghost" style="flex:1;font-size:10px;" onclick="dlOne(this.closest('.pass-card').querySelector('canvas'),window.guests[${idx}])">⬇ PNG</button>`; wrap.appendChild(act);container.appendChild(wrap); if(++rendered===window.guests.length) grid.appendChild(container); },420+idx*80); }); }
+function renderGrid(qrUrls,s,logoImg){ const grid=document.getElementById('pass-grid');grid.innerHTML=''; const container=document.createElement('div');container.className='pass-grid'; let rendered=0; window.guests.forEach((g,idx)=>{ const cv=drawPass(g,s.evtName,s.evtDate,s.evtTime,s.evtVenue,s.instName,s.instAddr,window.isDual(g)?'blue':'green',qrUrls[idx],logoImg); setTimeout(()=>{ const wrap=document.createElement('div');wrap.className='pass-card'; const strip=document.createElement('div');strip.style.cssText=`width:100%;height:5px;border-radius:4px;background:${window.isDual(g)?'#0ea5e9':'#059669'};`; wrap.appendChild(strip);cv.onclick=()=>window.dlOne(cv,g);wrap.appendChild(cv); const act=document.createElement('div');act.className='pass-actions'; act.innerHTML=`<span class="badge ${window.isDual(g)?'badge-blue':'badge-green'}" style="flex:0;padding:5px 8px;color:#fff;">${window.isDual(g)?'Dual':'Single'}</span> <button class="btn btn-ghost" style="flex:1;font-size:10px;" onclick="dlOne(this.closest('.pass-card').querySelector('canvas'),window.guests[${idx}])">⬇ PNG</button>`; wrap.appendChild(act);container.appendChild(wrap); if(++rendered===window.guests.length) grid.appendChild(container); },420+idx*80); }); }
 window.dlOne = function(cv,g){ const a=document.createElement('a');a.href=cv.toDataURL('image/png'); a.download=(g.name||'att').replace(/[^a-z0-9]/gi,'_')+'_'+g.uid+'.png';a.click(); }
 window.downloadAll = function(){ const cards=document.querySelectorAll('.pass-card'); if(!cards.length){window.showToast('Generate passes first');return;} cards.forEach((card,i)=>{setTimeout(()=>{const cv=card.querySelector('canvas');if(cv&&window.guests[i])window.dlOne(cv,window.guests[i]);},i*300);}); window.showToast('Downloading '+cards.length+' passes…'); }
-window.printPasses = function(){ const cards=document.querySelectorAll('.pass-card'); if(!cards.length){window.showToast('Generate passes first');return;} const win=window.open('','_blank');if(!win){alert('Allow popups to print.');return;} let imgs=''; cards.forEach((card,i)=>{ const cv=card.querySelector('canvas');if(!cv)return; const dual=window.guests[i]&&window.isDual(window.guests[i]); imgs+=`<div class="pass" style="border-top:5px solid ${dual?'#2563eb':'#dc2626'};box-shadow:0 2px 5px rgba(0,0,0,0.1);"><img src="${cv.toDataURL('image/png')}"><div class="nm">${window.esc(window.guests[i]?.name||'')} <span style="color:${dual?'#2563eb':'#dc2626'};font-size:10px;">${dual?'[DUAL]':'[SINGLE]'}</span></div></div>`; }); win.document.write(`<!DOCTYPE html><html><head><title>Event Passes</title> <style>*{box-sizing:border-box;margin:0;padding:0;}body{background:#f3f4f6;font-family:sans-serif;padding:10px;} .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;max-width:900px;margin:0 auto;} .pass{background:#fff;border-radius:10px;padding:7px;page-break-inside:avoid;} .pass img{width:100%;height:auto;border-radius:6px;display:block;} .nm{font-size:10px;text-align:center;margin-top:4px;font-weight:700;color:#111827;} @media print{body{padding:2px;background:#fff;}.grid{gap:6px;box-shadow:none;}} </style></head><body><div class="grid">${imgs}</div></body></html>`); win.document.close();win.onload=()=>{win.focus();win.print();}; }
+window.printPasses = function(){ const cards=document.querySelectorAll('.pass-card'); if(!cards.length){window.showToast('Generate passes first');return;} const win=window.open('','_blank');if(!win){alert('Allow popups to print.');return;} let imgs=''; cards.forEach((card,i)=>{ const cv=card.querySelector('canvas');if(!cv)return; const dual=window.guests[i]&&window.isDual(window.guests[i]); imgs+=`<div class="pass" style="border-top:5px solid ${dual?'#0ea5e9':'#059669'};box-shadow:0 2px 5px rgba(0,0,0,0.1);"><img src="${cv.toDataURL('image/png')}"><div class="nm">${window.esc(window.guests[i]?.name||'')} <span style="color:${dual?'#0ea5e9':'#059669'};font-size:10px;">${dual?'[DUAL]':'[SINGLE]'}</span></div></div>`; }); win.document.write(`<!DOCTYPE html><html><head><title>Event Passes</title> <style>*{box-sizing:border-box;margin:0;padding:0;}body{background:#f0fdf4;font-family:sans-serif;padding:10px;} .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;max-width:900px;margin:0 auto;} .pass{background:#fff;border-radius:10px;padding:7px;page-break-inside:avoid;} .pass img{width:100%;height:auto;border-radius:6px;display:block;} .nm{font-size:10px;text-align:center;margin-top:4px;font-weight:700;color:#0f172a;} @media print{body{padding:2px;background:#fff;}.grid{gap:6px;box-shadow:none;}} </style></head><body><div class="grid">${imgs}</div></body></html>`); win.document.close();win.onload=()=>{win.focus();win.print();}; }
 
 // ══ Scanner & Validation ═════════════════
 window.requestCameraPermission = async function(){ const btn=document.getElementById('cam-start-btn');const note=document.getElementById('cam-note'); btn.textContent='📷 Requesting access…';btn.disabled=true;note.style.display='none'; if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ btn.textContent='📷 Start Camera Scanner';btn.disabled=false;note.style.display='block'; note.innerHTML='<b>Camera not available.</b> Your browser blocked camera access because this page is not served over HTTPS.<br><br>'+ '<b>Workaround options:</b><br>① <b>iOS Safari:</b> Tap Share → Add to Home Screen, then open from there<br>'+ '② <b>Android Chrome:</b> tap ⋮ menu → Add to Home Screen<br>③ Host the file at any HTTPS URL (GitHub Pages, etc.)<br>④ Use the <b>Manual Entry</b> field below instead.'; document.getElementById('hs-hint').style.display='block';window.showToast('Camera not available — use Manual Entry');return; } try{ const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:1280}}}); videoStream=stream; document.getElementById('cam-permission-card').style.display='none';document.getElementById('scanner-wrap').style.display='block'; const video=document.getElementById('qr-video');video.srcObject=stream; try{await video.play();}catch(e){} try{ const devs=await navigator.mediaDevices.enumerateDevices();const cams=devs.filter(d=>d.kind==='videoinput'); if(cams.length>1){ const sel=document.getElementById('camera-select');sel.innerHTML=''; cams.forEach((cam,i)=>{const o=document.createElement('option');o.value=cam.deviceId;o.text=cam.label||'Camera '+(i+1);sel.appendChild(o);}); const back=cams.find(c=>/back|rear|environment/i.test(c.label));if(back)sel.value=back.deviceId;sel.style.display='block'; } }catch(e){} const track=stream.getVideoTracks()[0];if(track?.getCapabilities?.()?.torch) document.getElementById('torch-btn').style.display='inline-flex'; document.getElementById('scanner-status').textContent='Point camera at QR code';cameraActive=true;startScanning(video); }catch(err){ btn.textContent='📷 Start Camera Scanner';btn.disabled=false;note.style.display='block'; if(err.name==='NotAllowedError'||err.name==='PermissionDeniedError'){ note.innerHTML='<b>Permission denied.</b><br>• On <b>iOS</b>: Settings → Safari → Camera → Allow<br>• On <b>Android</b>: tap 🔒 in address bar → Camera → Allow<br>• Then reload and try again, or use <b>Manual Entry</b> below.'; window.showToast('Camera permission denied'); } else { note.innerHTML='<b>Camera error:</b> '+window.esc(err.message||err.name)+'<br>Use Manual Entry below.';window.showToast('Camera error'); } } }
@@ -662,6 +683,9 @@ window.processScan = async function(raw){
     if(document.getElementById('comp-modal')) return; 
     
     const isCompanionOnly = (currentCount === 1);
+    const isAlumDefault = guest.compAlumni === 'No' ? 'No' : 'Yes';
+    const showAlumFields = isAlumDefault === 'Yes' ? 'block' : 'none';
+
     const opts = `<option value="">Select...</option><option value="SOFD">SOFD</option><option value="SODM">SODM</option><option value="SOA">SOA</option><option value="SOC">SOC</option><option value="SODS">SODS</option><option value="SOJMC">SOJMC</option><option value="SOSP">SOSP</option><option value="SOID">SOID</option><option value="SOFA">SOFA</option><option value="SOM">SOM</option><option value="SOPA">SOPA</option><option value="SOPARE">SOPARE</option><option value="SOHT">SOHT</option><option value="SOW">SOW</option>`;
 
     const m = document.createElement('div'); m.id = 'comp-modal';
@@ -669,41 +693,49 @@ window.processScan = async function(raw){
     m.addEventListener('click', (e) => { if(e.target === m) document.getElementById('cm-cancel').click(); });
 
     m.innerHTML = `
-      <div style="background:#ffffff;padding:24px;border-radius:12px;width:100%;max-width:380px;border:1px solid #e5e7eb;box-shadow:0 10px 30px rgba(0,0,0,0.3);max-height:90vh;overflow-y:auto;">
-        <h3 style="margin-bottom:6px;font-size:18px;font-weight:800;color:#1e3a8a;">Dual Pass Registration</h3>
-        <p style="font-size:12px;color:#4b5563;margin-bottom:16px;">Primary: <b style="color:#111827">${window.esc(guest.name)}</b><br>${isCompanionOnly ? "Primary is already checked in. Enter guest details:" : "Enter the 2nd guest's details (if present)."}</p>
+      <div style="background:#ffffff;padding:24px;border-radius:12px;width:100%;max-width:380px;border:1px solid var(--border);box-shadow:0 10px 30px rgba(0,0,0,0.3);max-height:90vh;overflow-y:auto;">
+        <h3 style="margin-bottom:6px;font-size:18px;font-weight:800;color:var(--navy);">Dual Pass Registration</h3>
+        <p style="font-size:12px;color:var(--text2);margin-bottom:16px;">Primary: <b style="color:var(--text);">${window.esc(guest.name)}</b><br>${isCompanionOnly ? "Primary is already checked in. Confirm guest details:" : "Confirm the 2nd guest's details (if present)."}</p>
         
-        <label style="font-size:11px;color:#4b5563;display:block;margin-bottom:4px;font-weight:600;">Guest Name *</label>
-        <input type="text" id="cm-name" style="width:100%;padding:10px;margin-bottom:12px;border-radius:6px;border:1px solid #d1d5db;background:#f9fafb;color:#111827;outline:none;">
-        <label style="font-size:11px;color:#4b5563;display:block;margin-bottom:4px;font-weight:600;">Email ID *</label>
-        <input type="email" id="cm-email" style="width:100%;padding:10px;margin-bottom:12px;border-radius:6px;border:1px solid #d1d5db;background:#f9fafb;color:#111827;outline:none;">
-        <label style="font-size:11px;color:#4b5563;display:block;margin-bottom:4px;font-weight:600;">Mobile No. (10-digits) *</label>
-        <input type="tel" id="cm-mobile" style="width:100%;padding:10px;margin-bottom:16px;border-radius:6px;border:1px solid #d1d5db;background:#f9fafb;color:#111827;outline:none;">
-        <label style="font-size:11px;color:#4b5563;display:block;margin-bottom:4px;font-weight:600;">Is Guest an Alumni? *</label>
-        <select id="cm-alumni" onchange="document.getElementById('cm-alumni-fields').style.display = this.value === 'Yes' ? 'block' : 'none';" style="width:100%;padding:10px;margin-bottom:12px;border-radius:6px;border:1px solid #d1d5db;background:#f9fafb;color:#111827;outline:none;">
-          <option value="Yes">Yes, Alumni</option><option value="No">No, Non-Alumni</option>
+        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;font-weight:600;">Guest Name *</label>
+        <input type="text" id="cm-name" value="${window.esc(guest.compName || '')}" style="width:100%;padding:10px;margin-bottom:12px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);outline:none;">
+        
+        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;font-weight:600;">Email ID *</label>
+        <input type="email" id="cm-email" value="${window.esc(guest.compEmail || '')}" style="width:100%;padding:10px;margin-bottom:12px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);outline:none;">
+        
+        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;font-weight:600;">Mobile No. (10-digits) *</label>
+        <input type="tel" id="cm-mobile" value="${window.esc(guest.compMobile || '')}" style="width:100%;padding:10px;margin-bottom:16px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);outline:none;">
+        
+        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;font-weight:600;">Is Guest an Alumni? *</label>
+        <select id="cm-alumni" onchange="document.getElementById('cm-alumni-fields').style.display = this.value === 'Yes' ? 'block' : 'none';" style="width:100%;padding:10px;margin-bottom:12px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);outline:none;">
+          <option value="Yes" ${isAlumDefault === 'Yes' ? 'selected' : ''}>Yes, Alumni</option>
+          <option value="No" ${isAlumDefault === 'No' ? 'selected' : ''}>No, Non-Alumni</option>
         </select>
         
-        <div id="cm-alumni-fields">
+        <div id="cm-alumni-fields" style="display:${showAlumFields};">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-            <div><label style="font-size:11px;color:#4b5563;display:block;margin-bottom:4px;font-weight:600;">School *</label><select id="cm-school" style="width:100%;padding:10px;margin-bottom:12px;border-radius:6px;border:1px solid #d1d5db;background:#f9fafb;color:#111827;outline:none;">${opts}</select></div>
-            <div><label style="font-size:11px;color:#4b5563;display:block;margin-bottom:4px;font-weight:600;">Passing Year *</label><input type="number" id="cm-year" style="width:100%;padding:10px;margin-bottom:12px;border-radius:6px;border:1px solid #d1d5db;background:#f9fafb;color:#111827;outline:none;"></div>
+            <div><label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;font-weight:600;">School *</label><select id="cm-school" style="width:100%;padding:10px;margin-bottom:12px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);outline:none;">${opts}</select></div>
+            <div><label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;font-weight:600;">Passing Year *</label><input type="number" id="cm-year" value="${window.esc(guest.compYear || '')}" style="width:100%;padding:10px;margin-bottom:12px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);outline:none;"></div>
           </div>
-          <label style="font-size:11px;color:#4b5563;display:block;margin-bottom:4px;font-weight:600;">Degree Type *</label>
-          <select id="cm-degree" style="width:100%;padding:10px;margin-bottom:12px;border-radius:6px;border:1px solid #d1d5db;background:#f9fafb;color:#111827;outline:none;"><option value="UG">UG</option><option value="PG">PG</option><option value="DIP">DIP</option></select>
+          <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;font-weight:600;">Degree Type *</label>
+          <select id="cm-degree" style="width:100%;padding:10px;margin-bottom:12px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);outline:none;"><option value="UG">UG</option><option value="PG">PG</option><option value="DIP">DIP</option></select>
         </div>
 
         <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;">
-          ${!isCompanionOnly ? `<button id="cm-primary-only" style="padding:10px;border-radius:6px;border:2px solid #1e3a8a;background:transparent;color:#1e3a8a;font-weight:800;cursor:pointer;">Check In Primary ONLY (Guest arrives later)</button>` : ''}
+          ${!isCompanionOnly ? `<button id="cm-primary-only" style="padding:10px;border-radius:6px;border:2px solid var(--navy);background:transparent;color:var(--navy);font-weight:800;cursor:pointer;">Check In Primary ONLY (Guest arrives later)</button>` : ''}
           <div style="display:flex;gap:8px;">
-            <button id="cm-cancel" style="flex:1;padding:12px;border-radius:6px;border:1px solid #d1d5db;background:transparent;color:#4b5563;font-weight:700;cursor:pointer;">Cancel Scan</button>
-            <button id="cm-submit" style="flex:1;padding:12px;border-radius:6px;border:none;background:#dc2626;color:#fff;font-weight:700;cursor:pointer;">${isCompanionOnly ? 'Check In Guest' : 'Check In BOTH'}</button>
+            <button id="cm-cancel" style="flex:1;padding:12px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-weight:700;cursor:pointer;">Cancel Scan</button>
+            <button id="cm-submit" style="flex:1;padding:12px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;">${isCompanionOnly ? 'Check In Guest' : 'Check In BOTH'}</button>
           </div>
         </div>
       </div>
     `;
-    document.body.appendChild(m); document.getElementById('cm-name').focus();
+    document.body.appendChild(m); 
     
+    // Pre-select dropdowns if data exists
+    if(guest.compSchool) document.getElementById('cm-school').value = guest.compSchool;
+    if(guest.compDegree) document.getElementById('cm-degree').value = guest.compDegree;
+
     document.getElementById('cm-cancel').onclick = () => { document.body.removeChild(m); resBox.className = 'scan-result'; };
     
     if (!isCompanionOnly) {
@@ -736,12 +768,14 @@ window.processScan = async function(raw){
       document.getElementById('res-sub').textContent = isCompanionOnly ? 'Guest Checked In' : 'Dual Entry Authorized';
       showDetailGrid({ ...guest, checkinCount: 2 }); vibrate([60]); soundSuccess();
       
-      await updateDoc(doc(db, "guests", guest.uid), { checkinCount: 2, lastCheckin: new Date().toISOString() });
+      // Update DB with the confirmed companion info
+      await updateDoc(doc(db, "guests", guest.uid), { 
+        checkinCount: 2, lastCheckin: new Date().toISOString(),
+        compName: cName, compEmail: cEmail, compMobile: cMobile, compAlumni: isAlumni, compSchool: cSchool, compYear: cYear, compDegree: cDegree
+      });
       
       let log1 = null;
-      if (!isCompanionOnly) {
-        log1 = await window.logToFirebase(guest, 'checked_in');
-      }
+      if (!isCompanionOnly) { log1 = await window.logToFirebase(guest, 'checked_in'); }
       
       let log2 = null;
       try { const d = await addDoc(collection(db, "log"), { uid: guest.uid + "-GUEST", name: cName, degree: cDegree, school: cSchool, passYear: cYear, email: cEmail, mobile: cMobile, passType: "Companion Entry", type: "checked_in", time: new Date().toISOString() }); log2 = d.id; } catch(e) { console.error(e); }
@@ -757,8 +791,8 @@ window.processScan = async function(raw){
   triggerUndo(guest, 1, [logId]);
 }
 
-window.logToFirebase = async function(g, type){ try { const d = await addDoc(collection(db, "log"), { uid: g.uid || 'Unknown', name: g.name || 'Unknown', degree: g.degree || '', passType: g.passType || '', type, time: new Date().toISOString() }); return d.id; } catch(e) { console.error(e); return null; } }
-function showDetailGrid(g){ const dual=window.isDual(g); document.getElementById('res-detail').innerHTML=`<div class="scan-info-item"><div class="scan-info-lbl">Unique ID</div><div class="scan-info-val" style="font-family:monospace;font-size:11px">${window.esc(g.uid)}</div></div><div class="scan-info-item"><div class="scan-info-lbl">Degree</div><div class="scan-info-val">${window.esc(g.degree||'—')}</div></div><div class="scan-info-item"><div class="scan-info-lbl">Pass Type</div><div class="scan-info-val" style="color:${dual?'#2563eb':'#dc2626'}">${window.esc(g.passType)}</div></div><div class="scan-info-item"><div class="scan-info-lbl">Entries Used</div><div class="scan-info-val">${g.checkinCount||0} / ${dual?2:1}</div></div>`; }
+window.logToFirebase = async function(g, type){ try { const d = await addDoc(collection(db, "log"), { uid: g.uid || 'Unknown', name: g.name || 'Unknown', programme: g.programme || '', passYear: g.passYear || '', passType: g.passType || '', type, time: new Date().toISOString() }); return d.id; } catch(e) { console.error(e); return null; } }
+function showDetailGrid(g){ const dual=window.isDual(g); document.getElementById('res-detail').innerHTML=`<div class="scan-info-item"><div class="scan-info-lbl">Unique ID</div><div class="scan-info-val" style="font-family:monospace;font-size:11px">${window.esc(g.uid)}</div></div><div class="scan-info-item"><div class="scan-info-lbl">Programme</div><div class="scan-info-val">${window.esc(g.programme||'—')}</div></div><div class="scan-info-item"><div class="scan-info-lbl">Pass Type</div><div class="scan-info-val" style="color:${dual?'var(--blue)':'var(--accent)'}">${window.esc(g.passType)}</div></div><div class="scan-info-item"><div class="scan-info-lbl">Entries Used</div><div class="scan-info-val">${g.checkinCount||0} / ${dual?2:1}</div></div>`; }
 function vibrate(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
 
 function triggerUndo(guest, incrementCount, logIds) {
@@ -786,8 +820,8 @@ window.executeUndo = async function() {
 
 window.renderRecentScans = function(){ const el=document.getElementById('recent-scans'); if(!window.recentScans.length){el.innerHTML='<div class="empty" style="padding:12px 0">No scans yet.</div>';return;} const cls={checked_in:'badge-green',duplicate:'badge-amber',not_found:'badge-red'}; const lbl={checked_in:'✓ OK',duplicate:'⚠ Dup',not_found:'✕ Miss'}; el.innerHTML=window.recentScans.map(s=>`<div class="log-item"><span class="log-time">${window.fmtTime(s.time)}</span><span class="log-name">${window.esc(s.g.name)}<span style="color:var(--text3);font-size:9px;"> ${window.esc(s.g.uid||'')}</span></div><span class="badge ${cls[s.type]}" style="font-size:10px;">${lbl[s.type]}</span></div>`).join(''); }
 window.renderLog = function(){ const q=(document.getElementById('log-search').value||'').toLowerCase(); const f=document.getElementById('log-filter').value; const el=document.getElementById('log-list'); if(window.entryLog.length === 0){ el.innerHTML='<div class="empty">No entries yet.</div>'; return; } const filtered = window.entryLog.filter(l => (!q || (l.name || '').toLowerCase().includes(q) || (l.uid || '').toLowerCase().includes(q)) && (!f || l.type === f)); if(!filtered.length){el.innerHTML='<div class="empty">No matches found for your search.</div>';return;} const labels={checked_in:'In',duplicate:'Dup',not_found:'Miss'}; const cls={checked_in:'avatar-blue',duplicate:'avatar-gray',not_found:'avatar-red'}; el.innerHTML=filtered.map(l=>`<div class="log-item"><div class="guest-avatar ${cls[l.type]}">${window.esc(window.initials(l.name))}</div><div class="guest-info"><div class="guest-name">${window.esc(l.name)}</div><div class="guest-meta">${window.fmtTime(l.time)} · ${window.esc(l.uid)}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><span class="badge ${window.isDual({passType:l.passType})?'badge-blue':'badge-red'}">${window.isDual({passType:l.passType})?'D':'S'}</span><span class="badge ${l.type==='checked_in'?'badge-green':(l.type==='not_found'?'badge-red':'badge-amber')}">${labels[l.type]}</span></div></div>`).join(''); }
-window.exportLog = function(){ if(!window.entryLog.length){window.showToast('No entries yet');return;} const rows=[['Time','Name','Unique ID','School','Passing Year','Degree','Email','Mobile','Pass Type','Event'], ...window.entryLog.map(l=>[new Date(l.time).toLocaleString(),l.name,l.uid,l.school||'',l.passYear||'',l.degree,l.email||'',l.mobile||'',l.passType,l.type])]; const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n'); const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='entry_log_'+new Date().toISOString().substr(0,10)+'.csv';a.click(); }
-window.showToast = function(msg){ let t=document.getElementById('toast'); if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:#111827;border:1px solid rgba(255,255,255,0.1);color:#ffffff;padding:10px 18px;border-radius:99px;font-size:12px;font-weight:700;z-index:999;opacity:0;transition:all 0.2s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,0.15);';document.body.appendChild(t);} t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)'; clearTimeout(window._tt); window._tt=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)';},2500); }
+window.exportLog = function(){ if(!window.entryLog.length){window.showToast('No entries yet');return;} const rows=[['Time','Name','Unique ID','Programme','Passing Year','Email','Mobile','Pass Type','Event'], ...window.entryLog.map(l=>[new Date(l.time).toLocaleString(),l.name,l.uid,l.programme||'',l.passYear||'',l.email||'',l.mobile||'',l.passType,l.type])]; const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n'); const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='entry_log_'+new Date().toISOString().substr(0,10)+'.csv';a.click(); }
+window.showToast = function(msg){ let t=document.getElementById('toast'); if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);border:1px solid rgba(255,255,255,0.1);color:#ffffff;padding:10px 18px;border-radius:99px;font-size:12px;font-weight:700;z-index:999;opacity:0;transition:all 0.2s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,0.15);';document.body.appendChild(t);} t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)'; clearTimeout(window._tt); window._tt=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)';},2500); }
 
 const dz=document.getElementById('drop-zone'); dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');}); dz.addEventListener('dragleave',()=>dz.classList.remove('drag')); dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');const f=e.dataTransfer.files[0];if(f)window.handleFile({target:{files:[f]}});});
 
