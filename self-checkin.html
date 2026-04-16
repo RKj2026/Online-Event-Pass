@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Self Check-In</title>
+<style>
+:root{ 
+  --bg: #f3f4f6; --bg2: #ffffff; --bg3: #f9fafb;
+  --border: #e5e7eb; --border2: #d1d5db; 
+  --text: #111827; --text2: #4b5563; 
+  --accent: #dc2626; --navy: #1e3a8a;   
+  --green: #059669; --amber: #d97706;
+  --radius: 12px; --radius-sm: 8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+.container{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:30px 24px;width:100%;max-width:440px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.08); position:relative; overflow:hidden;}
+h1{font-size:24px;font-weight:800;margin-bottom:8px;color:var(--navy);}
+p{font-size:14px;color:var(--text2);margin-bottom:24px;line-height:1.5;}
+
+input,select{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-size:14px;padding:12px;outline:none;transition:all 0.2s;}
+input:focus,select:focus{border-color:var(--navy);background:#ffffff;box-shadow:0 0 0 3px rgba(30,58,138,0.1);}
+input.has-error, select.has-error { border-color: var(--accent) !important; background: #fef2f2 !important; }
+
+.error-text { color: var(--accent); font-size: 11px; font-weight: 600; text-align: left; margin: 4px 0 12px 4px; display: block; min-height: 14px; }
+.form-group { margin-bottom: 4px; text-align: left; }
+
+.btn{width:100%;background:var(--accent);color:#fff;border:none;padding:14px;border-radius:var(--radius-sm);font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:10px;text-transform:uppercase;letter-spacing:0.5px; display:flex; align-items:center; justify-content:center;}
+.btn:active{transform:scale(0.98);}
+.btn:disabled{opacity:0.7;cursor:not-allowed;transform:none;}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2);margin-top:12px;}
+
+.result-card{display:none;padding:10px 0;}
+.success-bg { background: #d1fae5; border: 1px solid rgba(5,150,105,0.3); }
+.dup-bg { background: #fef3c7; border: 1px solid rgba(217,119,6,0.3); }
+.fail-bg { background: #fef2f2; border: 1px solid rgba(220,38,38,0.3); }
+.result-icon{font-size:54px;margin-bottom:10px;}
+
+#companion-fields{display:none;text-align:left; animation: fadeIn 0.3s ease;}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+label{font-size:12px;color:var(--text2);display:block;margin-bottom:6px;font-weight:700;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.section-title{font-size:14px;font-weight:800;color:var(--navy);margin:20px 0 12px;border-bottom:1px solid var(--border);padding-bottom:6px;text-transform:uppercase;}
+
+/* Dynamic Brand Header */
+#dynamic-brand { text-align:center; margin-bottom:20px; width:100%; max-width:440px; }
+#brand-logo { height:64px; max-width:200px; object-fit:contain; margin:0 auto 10px auto; display:none; border-radius:6px; }
+#brand-title { color:var(--navy); font-weight:900; font-size:24px; display:none; margin-bottom:4px; }
+#brand-meta { color:var(--text2); font-size:13px; font-weight:600; display:none; }
+
+/* Loading Spinner */
+.spinner { display: none; width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; margin-right: 8px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Ticket Details Box */
+.ticket-details { background: var(--bg2); border: 1px dashed var(--border2); border-radius: var(--radius-sm); padding: 16px; margin: 20px 0; text-align: left; }
+.ticket-row { margin-bottom: 8px; font-size: 12px; color: var(--text2); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--bg); padding-bottom: 8px;}
+.ticket-row:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
+.ticket-val { color: var(--text); font-size: 14px; font-weight: 700; text-align: right;}
+</style>
+</head>
+<body>
+
+<div id="dynamic-brand">
+  <img id="brand-logo" src="" alt="Logo">
+  <h2 id="brand-title"></h2>
+  <div id="brand-meta"></div>
+</div>
+
+<div class="container" id="main-card">
+  <h1>Attendee Check-In</h1>
+  <p id="instruction-text">Enter your registered Email or Unique ID to check in to the event instantly.</p>
+
+  <input type="text" id="hp-trap" style="display:none" tabindex="-1" autocomplete="off">
+
+  <div class="form-group" style="text-align: left;">
+    <input type="text" id="lookup-input" placeholder="e.g. email@example.com or ID" autofocus oninput="clearErr(this)">
+    <span class="error-text" id="lookup-input-err"></span>
+  </div>
+
+  <div id="companion-fields">
+    <div class="section-title">2nd Guest Details (Dual Pass)</div>
+    <div id="comp-alert" style="display:none;background:#dbeafe;border:1px solid rgba(37,99,235,0.3);padding:10px;border-radius:8px;font-size:12px;color:#1e3a8a;margin-bottom:16px;text-align:center;font-weight:600;">
+      Dual Pass detected! Please provide your guest's full details.
+    </div>
+
+    <div class="form-group"><label>Guest Name *</label><input type="text" id="comp-name" placeholder="Guest Full Name" oninput="clearErr(this)"><span class="error-text" id="comp-name-err"></span></div>
+    <div class="form-group"><label>Guest Email *</label><input type="email" id="comp-email" placeholder="Valid Email" oninput="clearErr(this)"><span class="error-text" id="comp-email-err"></span></div>
+    <div class="form-group"><label>Guest Mobile *</label><input type="tel" id="comp-mobile" placeholder="10-digit number" oninput="clearErr(this)"><span class="error-text" id="comp-mobile-err"></span></div>
+    
+    <div class="form-group"><label>Is Guest an Alumni? *</label>
+    <select id="comp-alumni" onchange="document.getElementById('comp-alumni-wrap').style.display = this.value === 'Yes' ? 'block' : 'none'; clearErr(this);">
+      <option value="Yes">Yes, Alumni</option><option value="No">No, Non-Alumni</option>
+    </select></div>
+
+    <div id="comp-alumni-wrap">
+      <div class="grid-2">
+        <div class="form-group"><label>Guest School *</label><select id="comp-school" onchange="clearErr(this)"><option value="">Select...</option><option value="SOFD">SOFD</option><option value="SODM">SODM</option><option value="SOA">SOA</option><option value="SOC">SOC</option><option value="SODS">SODS</option><option value="SOJMC">SOJMC</option><option value="SOSP">SOSP</option><option value="SOID">SOID</option><option value="SOFA">SOFA</option><option value="SOM">SOM</option><option value="SOPA">SOPA</option><option value="SOPARE">SOPARE</option><option value="SOHT">SOHT</option><option value="SOW">SOW</option></select><span class="error-text" id="comp-school-err"></span></div>
+        <div class="form-group"><label>Passing Year *</label><input type="number" id="comp-year" placeholder="e.g. 2025" oninput="clearErr(this)"><span class="error-text" id="comp-year-err"></span></div>
+      </div>
+      <div class="form-group"><label>Guest Degree Type *</label><select id="comp-degree"><option value="UG">UG</option><option value="PG">PG</option><option value="DIP">DIP</option></select><span class="error-text"></span></div>
+    </div>
+  </div>
+
+  <button class="btn" id="action-btn" onclick="handleAction()" data-default="Check In">
+    <div class="spinner" id="btn-spin"></div><span id="btn-text">Check In</span>
+  </button>
+  
+  <button class="btn btn-ghost" id="primary-only-btn" onclick="handlePrimaryOnly()" style="display:none; width:100%;">
+    Check In Myself Only (Guest arriving later)
+  </button>
+</div>
+
+<div class="container result-card fail-bg" id="not-found-card">
+  <div class="success-icon">❌</div>
+  <h1 style="color:var(--accent)">Not Registered</h1>
+  <p style="margin-bottom:0;color:#991b1b;font-weight:600;">We couldn't find a matching ticket for this email or ID.<br><br>Please approach the Registration Desk for manual on-spot registration after paying the registration fee.</p>
+  <button class="btn" style="background:var(--accent);margin-top:20px;" onclick="resetForm()">Try Another ID</button>
+</div>
+
+<div class="container result-card success-bg" id="success-card">
+  <div class="success-icon">✅</div>
+  <h1 style="color:var(--green)">Check-In Complete!</h1>
+  <p style="margin-bottom:0;color:#065f46;font-weight:600;">Welcome to the event.</p>
+  
+  <div class="ticket-details">
+    <div class="ticket-row"><span>Event:</span> <span class="ticket-val" id="succ-evt">Event Name</span></div>
+    <div class="ticket-row"><span>Name:</span> <span class="ticket-val" id="succ-name">John Doe</span></div>
+    <div class="ticket-row"><span>Pass Type:</span> <span class="ticket-val" id="succ-pass">Single Entry</span></div>
+    <div class="ticket-row"><span>Time:</span> <span class="ticket-val" id="succ-time">10:00 AM</span></div>
+  </div>
+  
+  <button class="btn" style="background:var(--green);" onclick="resetForm()">Done / Scan Another</button>
+</div>
+
+<div class="container result-card dup-bg" id="duplicate-card">
+  <div class="success-icon">⚠️</div>
+  <h1 style="color:var(--amber)">Already Checked In</h1>
+  <p style="margin-bottom:0;color:#92400e;font-weight:600;">The system shows this pass has reached its limit.</p>
+  
+  <div class="ticket-details">
+    <div class="ticket-row"><span>Name:</span> <span class="ticket-val" id="dup-name">John Doe</span></div>
+    <div class="ticket-row"><span>Pass Type:</span> <span class="ticket-val" id="dup-pass">Single Entry</span></div>
+    <div class="ticket-row"><span>Entries Used:</span> <span class="ticket-val" id="dup-count">1 / 1</span></div>
+  </div>
+  
+  <button class="btn" style="background:var(--amber);" onclick="resetForm()">Scan Another Pass</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.0/firebase-app.js";
+import { getFirestore, collection, doc, getDocs, updateDoc, addDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/12.2.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCq5rmox4ET5jA_rWmXw3y5TCIQ3VLS_S0",
+    authDomain: "online-event-pass.firebaseapp.com",
+    projectId: "online-event-pass",
+    storageBucket: "online-event-pass.firebasestorage.app",
+    messagingSenderId: "480642479322",
+    appId: "1:480642479322:web:524e5488548e3cb91d21e3",
+    measurementId: "G-VLNFRQ5DQW"
+  };
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let foundGuestTemp = null;
+let foundDocIdTemp = null;
+window.eventConfig = {};
+
+function valEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+function valMob(m){ return /^\d{10}$/.test(m); }
+function cleanStr(s) { return String(s||'').replace(/[\r\n\t]/g, '').trim(); }
+
+window.clearErr = function(el) { el.classList.remove('has-error'); const err = document.getElementById(el.id+'-err'); if(err) err.innerText = ''; }
+function throwErr(id, msg) { const el = document.getElementById(id); el.classList.add('has-error'); const err = document.getElementById(id+'-err'); if(err) err.innerText = msg; }
+
+function setLoading(isLoading) {
+  const btn = document.getElementById('action-btn');
+  const spin = document.getElementById('btn-spin');
+  const txt = document.getElementById('btn-text');
+  btn.disabled = isLoading;
+  spin.style.display = isLoading ? 'block' : 'none';
+  txt.innerText = isLoading ? 'Processing...' : btn.getAttribute('data-default');
+}
+
+// ── DYNAMIC HEADER SYNC ──
+onSnapshot(doc(db, "config", "eventDetails"), (snap) => {
+  if (snap.exists()) {
+    const data = snap.data();
+    window.eventConfig = data;
+    const logoEl = document.getElementById('brand-logo');
+    const titleEl = document.getElementById('brand-title');
+    const metaEl = document.getElementById('brand-meta');
+    
+    if(data.logoDataUrl) { logoEl.src = data.logoDataUrl; logoEl.style.display = 'block'; } 
+    else { logoEl.style.display = 'none'; }
+    
+    if(data.instName) { titleEl.textContent = data.instName; titleEl.style.display = 'block'; } 
+    else { titleEl.style.display = 'none'; }
+
+    if(data.evtName) { 
+      metaEl.innerHTML = `${data.evtName} &nbsp;•&nbsp; ${data.evtDate}`; 
+      metaEl.style.display = 'block'; 
+    } else { metaEl.style.display = 'none'; }
+  }
+});
+
+// ── NEW: PRIMARY ONLY CHECK-IN (Self-Serve) ──
+window.handlePrimaryOnly = async function() {
+  if(!foundGuestTemp || !foundDocIdTemp) return;
+  setLoading(true);
+  try {
+    await updateDoc(doc(db, "guests", foundDocIdTemp), { checkinCount: 1, lastCheckin: new Date().toISOString() });
+    await addDoc(collection(db, "log"), { uid: foundGuestTemp.uid, name: foundGuestTemp.name, degree: foundGuestTemp.degree, school: foundGuestTemp.school||'', passYear: foundGuestTemp.passYear||'', email: foundGuestTemp.email||'', mobile: foundGuestTemp.mobile||'', passType: foundGuestTemp.passType, type: "checked_in", time: new Date().toISOString() });
+    showSuccess(foundGuestTemp.name, 'Primary Only (1 of 2)');
+  } catch(e) { throwErr('lookup-input', 'Network error. Try again.'); setLoading(false); }
+}
+
+window.handleAction = async function() {
+  if(document.getElementById('hp-trap').value) return; 
+
+  const lookupVal = cleanStr(document.getElementById('lookup-input').value);
+  if (!lookupVal) { throwErr('lookup-input', 'Please enter your Email or ID'); return; }
+  
+  setLoading(true);
+
+  if (foundGuestTemp) {
+    // ── CONFIRMING 2ND PERSON ON DUAL PASS LOOKUP ──
+    const cName = document.getElementById('comp-name').value.trim();
+    const cEmail = document.getElementById('comp-email').value.trim();
+    const cMobile = document.getElementById('comp-mobile').value.trim();
+    const isAlum = document.getElementById('comp-alumni').value;
+    const cSchool = isAlum === 'Yes' ? document.getElementById('comp-school').value : 'N/A';
+    const cYear = isAlum === 'Yes' ? document.getElementById('comp-year').value.trim() : 'N/A';
+    const cDegree = isAlum === 'Yes' ? document.getElementById('comp-degree').value : 'N/A';
+
+    let hasErr = false;
+    if (!cName) { throwErr('comp-name', 'Required'); hasErr = true; }
+    if (!cEmail) { throwErr('comp-email', 'Required'); hasErr = true; } else if(!valEmail(cEmail)) { throwErr('comp-email', 'Invalid'); hasErr=true;}
+    if (!cMobile) { throwErr('comp-mobile', 'Required'); hasErr = true; } else if(!valMob(cMobile)) { throwErr('comp-mobile', 'Invalid'); hasErr=true;}
+    if (isAlum === 'Yes' && !cSchool) { throwErr('comp-school', 'Required'); hasErr = true; }
+    if (isAlum === 'Yes' && !cYear) { throwErr('comp-year', 'Required'); hasErr = true; }
+
+    if(hasErr) { setLoading(false); return; }
+    
+    const count = foundGuestTemp.checkinCount || 0;
+    const isCompanionOnly = (count === 1);
+
+    try {
+      await updateDoc(doc(db, "guests", foundDocIdTemp), { checkinCount: 2, lastCheckin: new Date().toISOString() });
+      
+      // Only log the primary if this is their first scan
+      if (count === 0) {
+        await addDoc(collection(db, "log"), { uid: foundGuestTemp.uid, name: foundGuestTemp.name, degree: foundGuestTemp.degree, school: foundGuestTemp.school||'', passYear: foundGuestTemp.passYear||'', email: foundGuestTemp.email||'', mobile: foundGuestTemp.mobile||'', passType: foundGuestTemp.passType, type: "checked_in", time: new Date().toISOString() });
+      }
+      
+      await addDoc(collection(db, "log"), { uid: foundGuestTemp.uid+"-GUEST", name: cName, degree: cDegree, school: cSchool, passYear: cYear, email: cEmail, mobile: cMobile, passType: "Companion Entry", type: "checked_in", time: new Date().toISOString() });
+      
+      showSuccess(foundGuestTemp.name + " & " + cName, isCompanionOnly ? 'Guest Entry' : foundGuestTemp.passType);
+    } catch(e) { throwErr('lookup-input', 'Network error.'); setLoading(false); }
+
+  } else {
+    // ── NORMAL LOOKUP (Query exactly, no full scan) ──
+    try {
+      const searchVal = lookupVal.toLowerCase();
+      let snap = await getDocs(query(collection(db, "guests"), where("uid", "==", lookupVal))); // Exact UID check
+      if(snap.empty) snap = await getDocs(query(collection(db, "guests"), where("email", "==", searchVal))); // Case insensitive Email check
+
+      if (!snap.empty) {
+        foundGuestTemp = snap.docs[0].data(); 
+        foundDocIdTemp = snap.docs[0].id;
+
+        const dual = String(foundGuestTemp.passType).toLowerCase().includes('dual');
+        const maxEntries = dual ? 2 : 1;
+        const count = foundGuestTemp.checkinCount || 0;
+        
+        if (count >= maxEntries) {
+           showDuplicate(foundGuestTemp, count, maxEntries);
+           setLoading(false); foundGuestTemp = null; return;
+        }
+
+        if (dual && count === 0) {
+             document.getElementById('companion-fields').style.display = 'block';
+             document.getElementById('comp-alert').textContent = "Dual Pass detected! Please provide your guest's full details.";
+             document.getElementById('comp-alert').style.display = 'block';
+             document.getElementById('instruction-text').style.display = 'none';
+             document.getElementById('lookup-input').disabled = true;
+             
+             document.getElementById('primary-only-btn').style.display = 'block';
+             
+             const btn = document.getElementById('action-btn');
+             btn.setAttribute('data-default', 'Check In Both');
+             setLoading(false); return;
+        }
+
+        if (dual && count === 1) {
+             document.getElementById('companion-fields').style.display = 'block';
+             document.getElementById('comp-alert').textContent = "You are already checked in. Please provide your guest's details.";
+             document.getElementById('comp-alert').style.display = 'block';
+             document.getElementById('instruction-text').style.display = 'none';
+             document.getElementById('lookup-input').disabled = true;
+             
+             const btn = document.getElementById('action-btn');
+             btn.setAttribute('data-default', 'Check In Guest');
+             setLoading(false); return;
+        }
+
+        // Standard Single Check in
+        await updateDoc(doc(db, "guests", foundDocIdTemp), { checkinCount: 1, lastCheckin: new Date().toISOString() });
+        await addDoc(collection(db, "log"), { uid: foundGuestTemp.uid, name: foundGuestTemp.name, degree: foundGuestTemp.degree, school: foundGuestTemp.school||'', passYear: foundGuestTemp.passYear||'', email: foundGuestTemp.email||'', mobile: foundGuestTemp.mobile||'', passType: foundGuestTemp.passType, type: "checked_in", time: new Date().toISOString() });
+        showSuccess(foundGuestTemp.name, foundGuestTemp.passType);
+        
+      } else {
+        // NOT FOUND -> Show Red Warning Card (NO Spot Registration Allowed)
+        document.getElementById('main-card').style.display = 'none';
+        document.getElementById('not-found-card').style.display = 'block';
+        setLoading(false);
+      }
+    } catch(e) { throwErr('lookup-input', 'Connection failed. Please try again.'); setLoading(false); }
+  }
+}
+
+function showSuccess(name, passType) {
+  document.getElementById('main-card').style.display = 'none';
+  document.getElementById('duplicate-card').style.display = 'none';
+  document.getElementById('not-found-card').style.display = 'none';
+  
+  document.getElementById('succ-evt').textContent = window.eventConfig.evtName || 'General Event';
+  document.getElementById('succ-name').textContent = name;
+  document.getElementById('succ-pass').textContent = passType || 'Single Entry';
+  document.getElementById('succ-time').textContent = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  
+  document.getElementById('success-card').style.display = 'block';
+}
+
+function showDuplicate(guest, current, max) {
+  document.getElementById('main-card').style.display = 'none';
+  document.getElementById('success-card').style.display = 'none';
+  document.getElementById('not-found-card').style.display = 'none';
+  
+  document.getElementById('dup-name').textContent = guest.name;
+  document.getElementById('dup-pass').textContent = guest.passType;
+  document.getElementById('dup-count').textContent = `${current} / ${max}`;
+  
+  document.getElementById('duplicate-card').style.display = 'block';
+}
+
+window.resetForm = function() {
+  foundGuestTemp = null;
+  foundDocIdTemp = null;
+  
+  document.querySelectorAll('input, select').forEach(el => {
+    if(el.id !== 'hp-trap') el.value = '';
+    el.classList.remove('has-error');
+  });
+  document.querySelectorAll('.error-text').forEach(el => el.innerText = '');
+  
+  document.getElementById('lookup-input').disabled = false;
+  document.getElementById('instruction-text').style.display = 'block';
+  document.getElementById('companion-fields').style.display = 'none';
+  document.getElementById('primary-only-btn').style.display = 'none';
+  
+  document.getElementById('success-card').style.display = 'none';
+  document.getElementById('duplicate-card').style.display = 'none';
+  document.getElementById('not-found-card').style.display = 'none';
+  
+  const btn = document.getElementById('action-btn');
+  btn.setAttribute('data-default', 'Check In');
+  setLoading(false);
+  
+  document.getElementById('main-card').style.display = 'block';
+  document.getElementById('lookup-input').focus();
+}
+</script>
+</body>
+</html>
