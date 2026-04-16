@@ -185,21 +185,6 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:6px;font-wei
     <div class="form-group"><label>Guest Name *</label><input type="text" id="comp-name" placeholder="Guest Full Name" oninput="clearErr(this)"><span class="error-text" id="comp-name-err"></span></div>
     <div class="form-group"><label>Guest Email *</label><input type="email" id="comp-email" placeholder="Valid Email" oninput="clearErr(this)"><span class="error-text" id="comp-email-err"></span></div>
     <div class="form-group"><label>Guest Mobile *</label><input type="tel" id="comp-mobile" placeholder="10-digit number" oninput="clearErr(this)"><span class="error-text" id="comp-mobile-err"></span></div>
-    
-    <div class="grid-2">
-      <div class="form-group"><label>Guest Programme *</label>
-        <select id="comp-programme" onchange="clearErr(this)">
-          <option value="">Select...</option><option value="Undergraduate (UG)">Undergraduate (UG)</option><option value="Postgraduate (PG)">Postgraduate (PG)</option><option value="Diploma">Diploma</option><option value="Certificate">Certificate</option>
-        </select>
-        <span class="error-text" id="comp-programme-err"></span>
-      </div>
-      <div class="form-group"><label>Passing Year *</label>
-        <select id="comp-year" onchange="clearErr(this)">
-          <option value="">Select Year...</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option>
-        </select>
-        <span class="error-text" id="comp-year-err"></span>
-      </div>
-    </div>
   </div>
 
   <button class="btn" id="action-btn" onclick="handleAction()" data-default="Check In">
@@ -329,15 +314,11 @@ window.handleAction = async function() {
     const cName = document.getElementById('comp-name').value.trim();
     const cEmail = document.getElementById('comp-email').value.trim();
     const cMobile = document.getElementById('comp-mobile').value.trim();
-    const cProgramme = document.getElementById('comp-programme').value;
-    const cYear = document.getElementById('comp-year').value;
 
     let hasErr = false;
     if (!cName) { throwErr('comp-name', 'Required'); hasErr = true; }
     if (!cEmail) { throwErr('comp-email', 'Required'); hasErr = true; } else if(!valEmail(cEmail)) { throwErr('comp-email', 'Invalid'); hasErr=true;}
     if (!cMobile) { throwErr('comp-mobile', 'Required'); hasErr = true; } else if(!valMob(cMobile)) { throwErr('comp-mobile', 'Invalid'); hasErr=true;}
-    if (!cProgramme) { throwErr('comp-programme', 'Required'); hasErr = true; }
-    if (!cYear) { throwErr('comp-year', 'Required'); hasErr = true; }
 
     if(hasErr) { setLoading(false); return; }
     
@@ -348,14 +329,14 @@ window.handleAction = async function() {
       // Update DB with the confirmed companion info
       await updateDoc(doc(db, "guests", foundDocIdTemp), { 
         checkinCount: 2, lastCheckin: new Date().toISOString(),
-        compName: cName, compEmail: cEmail, compMobile: cMobile, compProgramme: cProgramme, compYear: cYear
+        compName: cName, compEmail: cEmail, compMobile: cMobile
       });
       
       if (count === 0) {
         await addDoc(collection(db, "log"), { uid: foundGuestTemp.uid, name: foundGuestTemp.name, programme: foundGuestTemp.programme||'', passYear: foundGuestTemp.passYear||'', email: foundGuestTemp.email||'', mobile: foundGuestTemp.mobile||'', passType: foundGuestTemp.passType, type: "checked_in", time: new Date().toISOString() });
       }
       
-      await addDoc(collection(db, "log"), { uid: foundGuestTemp.uid+"-GUEST", name: cName, programme: cProgramme, passYear: cYear, email: cEmail, mobile: cMobile, passType: "Companion Entry", type: "checked_in", time: new Date().toISOString() });
+      await addDoc(collection(db, "log"), { uid: foundGuestTemp.uid+"-GUEST", name: cName, programme: 'N/A', passYear: 'N/A', email: cEmail, mobile: cMobile, passType: "Companion Entry", type: "checked_in", time: new Date().toISOString() });
       
       showSuccess(foundGuestTemp.name + " & " + cName, isCompanionOnly ? 'Guest Entry' : foundGuestTemp.passType);
     } catch(e) { throwErr('lookup-input', 'Network error.'); setLoading(false); }
@@ -392,8 +373,6 @@ window.handleAction = async function() {
              if(foundGuestTemp.compName) document.getElementById('comp-name').value = foundGuestTemp.compName;
              if(foundGuestTemp.compEmail) document.getElementById('comp-email').value = foundGuestTemp.compEmail;
              if(foundGuestTemp.compMobile) document.getElementById('comp-mobile').value = foundGuestTemp.compMobile;
-             if(foundGuestTemp.compProgramme) document.getElementById('comp-programme').value = foundGuestTemp.compProgramme;
-             if(foundGuestTemp.compYear) document.getElementById('comp-year').value = foundGuestTemp.compYear;
 
              const btn = document.getElementById('action-btn');
              btn.setAttribute('data-default', 'Check In Both');
@@ -411,8 +390,6 @@ window.handleAction = async function() {
              if(foundGuestTemp.compName) document.getElementById('comp-name').value = foundGuestTemp.compName;
              if(foundGuestTemp.compEmail) document.getElementById('comp-email').value = foundGuestTemp.compEmail;
              if(foundGuestTemp.compMobile) document.getElementById('comp-mobile').value = foundGuestTemp.compMobile;
-             if(foundGuestTemp.compProgramme) document.getElementById('comp-programme').value = foundGuestTemp.compProgramme;
-             if(foundGuestTemp.compYear) document.getElementById('comp-year').value = foundGuestTemp.compYear;
              
              const btn = document.getElementById('action-btn');
              btn.setAttribute('data-default', 'Check In Guest');
