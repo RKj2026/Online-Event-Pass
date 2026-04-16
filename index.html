@@ -6,11 +6,17 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>EventPass — Gate Operations</title>
+<title>Gate Operations | AAFT Online</title>
+
+<meta property="og:title" content="AAFT Online Event Pass - Gate Operations">
+<meta property="og:description" content="Staff dashboard for managing event check-ins.">
+<meta property="og:image" content="https://rkj2026.github.io/YOUR-REPO-NAME/bg-image.jpg">
+<link rel="icon" type="image/jpeg" href="bg-image.jpg">
+
 <style>
 /* 🌿 PREMIUM GREEN THEME 🌿 */
 :root{
-  --bg: #f0fdf4;         /* Very soft green-tinted background */
+  --bg: #f0fdf4;         
   --bg2: #ffffff; 
   --bg3: #f8fafc; 
   --border: #e2e8f0; 
@@ -18,9 +24,9 @@
   --text: #0f172a; 
   --text2: #475569; 
   --text3: #64748b; 
-  --accent: #059669;     /* Premium Emerald Green */
+  --accent: #059669;     
   --accent-hover: #047857;
-  --navy: #022c22;       /* Deep Forest Green (Replaces Navy) */
+  --navy: #022c22;       
   --green: #10b981; --green-bg: #d1fae5;
   --amber: #d97706; --amber-bg: #fef3c7;
   --red: #ef4444; --red-bg: #fee2e2;
@@ -29,12 +35,29 @@
   --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:15px;}
-.app{display:flex;flex-direction:column;height:100vh;max-width:520px;margin:0 auto;background:var(--bg);}
+
+/* Watermark Background */
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:15px;position:relative;z-index:1;}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background-image: url('bg-image.jpg');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 60%;
+  opacity: 0.08;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.app{display:flex;flex-direction:column;height:100vh;max-width:520px;margin:0 auto;background:transparent;}
 
 #offline-banner { display: none; background: var(--red); color: white; text-align: center; padding: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; z-index: 9999; }
 
-.header{background:var(--navy);padding:14px 20px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.header{background:var(--navy);padding:14px 20px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:var(--shadow);}
 .logo{font-size:20px;font-weight:800;letter-spacing:-0.3px;color:#ffffff;display:flex;align-items:center;gap:8px;}
 .logo img{height:28px;border-radius:4px;display:none;background:#fff;padding:2px;}
 .logo span{color:var(--accent);}
@@ -161,6 +184,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:4px;font-wei
 .search-wrap input{padding-left:32px;background:#ffffff;}
 .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text3);pointer-events:none;}
 
+/* Undo Toast */
 #undo-toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(100px); background: #111827; color: #fff; padding: 10px 16px; border-radius: 99px; font-size: 13px; font-weight: 600; z-index: 9999; display: flex; align-items: center; gap: 12px; opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
 #undo-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 #undo-btn { background: rgba(255,255,255,0.2); color: #fff; border: none; padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 800; cursor: pointer; text-transform: uppercase; }
@@ -375,17 +399,15 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:4px;font-wei
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.0/firebase-app.js";
 import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, query, orderBy, writeBatch, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.2.0/firebase-firestore.js";
 
-// ══ FIREBASE INIT ══════════════════════════════════════════════════
 // REPLACE THIS CONFIG BLOCK WITH YOUR NEW "ONLINE-EVENT-PASS" KEYS
 const firebaseConfig = {
-    apiKey: "AIzaSyCq5rmox4ET5jA_rWmXw3y5TCIQ3VLS_S0",
-    authDomain: "online-event-pass.firebaseapp.com",
-    projectId: "online-event-pass",
-    storageBucket: "online-event-pass.firebasestorage.app",
-    messagingSenderId: "480642479322",
-    appId: "1:480642479322:web:524e5488548e3cb91d21e3",
-    measurementId: "G-VLNFRQ5DQW"
-  };
+  apiKey: "AIzaSyAHoI1PZqsf_6UojNsgDFqSaQ_00I27onw",
+  authDomain: "scanner-system-32692.firebaseapp.com",
+  projectId: "scanner-system-32692",
+  storageBucket: "scanner-system-32692.firebasestorage.app",
+  messagingSenderId: "517388530229",
+  appId: "1:517388530229:web:418d4e80fce9bfa931f77c"
+};
 const app = initializeApp(firebaseConfig); 
 const db = getFirestore(app);
 
@@ -733,7 +755,6 @@ window.processScan = async function(raw){
     `;
     document.body.appendChild(m); 
     
-    // Pre-select dropdowns if data exists
     if(guest.compSchool) document.getElementById('cm-school').value = guest.compSchool;
     if(guest.compDegree) document.getElementById('cm-degree').value = guest.compDegree;
 
@@ -792,8 +813,8 @@ window.processScan = async function(raw){
   triggerUndo(guest, 1, [logId]);
 }
 
-window.logToFirebase = async function(g, type){ try { const d = await addDoc(collection(db, "log"), { uid: g.uid || 'Unknown', name: g.name || 'Unknown', programme: g.programme || '', passYear: g.passYear || '', passType: g.passType || '', type, time: new Date().toISOString() }); return d.id; } catch(e) { console.error(e); return null; } }
-function showDetailGrid(g){ const dual=window.isDual(g); document.getElementById('res-detail').innerHTML=`<div class="scan-info-item"><div class="scan-info-lbl">Unique ID</div><div class="scan-info-val" style="font-family:monospace;font-size:11px">${window.esc(g.uid)}</div></div><div class="scan-info-item"><div class="scan-info-lbl">Programme</div><div class="scan-info-val">${window.esc(g.programme||'—')}</div></div><div class="scan-info-item"><div class="scan-info-lbl">Pass Type</div><div class="scan-info-val" style="color:${dual?'var(--blue)':'var(--accent)'}">${window.esc(g.passType)}</div></div><div class="scan-info-item"><div class="scan-info-lbl">Entries Used</div><div class="scan-info-val">${g.checkinCount||0} / ${dual?2:1}</div></div>`; }
+window.logToFirebase = async function(g, type){ try { const d = await addDoc(collection(db, "log"), { uid: g.uid || 'Unknown', name: g.name || 'Unknown', degree: g.degree || '', passType: g.passType || '', type, time: new Date().toISOString() }); return d.id; } catch(e) { console.error(e); return null; } }
+function showDetailGrid(g){ const dual=window.isDual(g); document.getElementById('res-detail').innerHTML=`<div class="scan-info-item"><div class="scan-info-lbl">Unique ID</div><div class="scan-info-val" style="font-family:monospace;font-size:11px">${window.esc(g.uid)}</div></div><div class="scan-info-item"><div class="scan-info-lbl">Degree</div><div class="scan-info-val">${window.esc(g.degree||'—')}</div></div><div class="scan-info-item"><div class="scan-info-lbl">Pass Type</div><div class="scan-info-val" style="color:${dual?'var(--blue)':'var(--accent)'}">${window.esc(g.passType)}</div></div><div class="scan-info-item"><div class="scan-info-lbl">Entries Used</div><div class="scan-info-val">${g.checkinCount||0} / ${dual?2:1}</div></div>`; }
 function vibrate(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
 
 function triggerUndo(guest, incrementCount, logIds) {
@@ -821,7 +842,7 @@ window.executeUndo = async function() {
 
 window.renderRecentScans = function(){ const el=document.getElementById('recent-scans'); if(!window.recentScans.length){el.innerHTML='<div class="empty" style="padding:12px 0">No scans yet.</div>';return;} const cls={checked_in:'badge-green',duplicate:'badge-amber',not_found:'badge-red'}; const lbl={checked_in:'✓ OK',duplicate:'⚠ Dup',not_found:'✕ Miss'}; el.innerHTML=window.recentScans.map(s=>`<div class="log-item"><span class="log-time">${window.fmtTime(s.time)}</span><span class="log-name">${window.esc(s.g.name)}<span style="color:var(--text3);font-size:9px;"> ${window.esc(s.g.uid||'')}</span></div><span class="badge ${cls[s.type]}" style="font-size:10px;">${lbl[s.type]}</span></div>`).join(''); }
 window.renderLog = function(){ const q=(document.getElementById('log-search').value||'').toLowerCase(); const f=document.getElementById('log-filter').value; const el=document.getElementById('log-list'); if(window.entryLog.length === 0){ el.innerHTML='<div class="empty">No entries yet.</div>'; return; } const filtered = window.entryLog.filter(l => (!q || (l.name || '').toLowerCase().includes(q) || (l.uid || '').toLowerCase().includes(q)) && (!f || l.type === f)); if(!filtered.length){el.innerHTML='<div class="empty">No matches found for your search.</div>';return;} const labels={checked_in:'In',duplicate:'Dup',not_found:'Miss'}; const cls={checked_in:'avatar-blue',duplicate:'avatar-gray',not_found:'avatar-red'}; el.innerHTML=filtered.map(l=>`<div class="log-item"><div class="guest-avatar ${cls[l.type]}">${window.esc(window.initials(l.name))}</div><div class="guest-info"><div class="guest-name">${window.esc(l.name)}</div><div class="guest-meta">${window.fmtTime(l.time)} · ${window.esc(l.uid)}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><span class="badge ${window.isDual({passType:l.passType})?'badge-blue':'badge-red'}">${window.isDual({passType:l.passType})?'D':'S'}</span><span class="badge ${l.type==='checked_in'?'badge-green':(l.type==='not_found'?'badge-red':'badge-amber')}">${labels[l.type]}</span></div></div>`).join(''); }
-window.exportLog = function(){ if(!window.entryLog.length){window.showToast('No entries yet');return;} const rows=[['Time','Name','Unique ID','Programme','Passing Year','Email','Mobile','Pass Type','Event'], ...window.entryLog.map(l=>[new Date(l.time).toLocaleString(),l.name,l.uid,l.programme||'',l.passYear||'',l.email||'',l.mobile||'',l.passType,l.type])]; const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n'); const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='entry_log_'+new Date().toISOString().substr(0,10)+'.csv';a.click(); }
+window.exportLog = function(){ if(!window.entryLog.length){window.showToast('No entries yet');return;} const rows=[['Time','Name','Unique ID','School','Passing Year','Degree','Email','Mobile','Pass Type','Event'], ...window.entryLog.map(l=>[new Date(l.time).toLocaleString(),l.name,l.uid,l.school||'',l.passYear||'',l.degree,l.email||'',l.mobile||'',l.passType,l.type])]; const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n'); const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='entry_log_'+new Date().toISOString().substr(0,10)+'.csv';a.click(); }
 window.showToast = function(msg){ let t=document.getElementById('toast'); if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);border:1px solid rgba(255,255,255,0.1);color:#ffffff;padding:10px 18px;border-radius:99px;font-size:12px;font-weight:700;z-index:999;opacity:0;transition:all 0.2s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,0.15);';document.body.appendChild(t);} t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)'; clearTimeout(window._tt); window._tt=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)';},2500); }
 
 const dz=document.getElementById('drop-zone'); dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');}); dz.addEventListener('dragleave',()=>dz.classList.remove('drag')); dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');const f=e.dataTransfer.files[0];if(f)window.handleFile({target:{files:[f]}});});
