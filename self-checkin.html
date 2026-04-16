@@ -7,31 +7,35 @@
 
 <meta property="og:title" content="AAFT Online Event Pass - Self Check-In">
 <meta property="og:description" content="Check-in or register for the upcoming AAFT Online Event.">
-<meta property="og:image" content="https://rkj2026.github.io/Online-Event-Pass/bg-image.jpg">
+<meta property="og:image" content="https://rkj2026.github.io/YOUR-REPO-NAME/bg-image.jpg">
 <link rel="icon" type="image/jpeg" href="bg-image.jpg">
 
 <style>
-/* 🌿 PREMIUM GREEN THEME 🌿 */
-:root{ 
-  --bg: #f0fdf4; 
-  --bg2: #ffffff; 
-  --bg3: #f8fafc;
+/* 🌿 PREMIUM FROSTED GLASS THEME (LIGHT MODE) 🌿 */
+:root {
+  --bg-gradient: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-shadow: 0 10px 40px 0 rgba(2, 44, 34, 0.08);
+  --bg3: rgba(255, 255, 255, 0.5); 
+  
   --border: #e2e8f0; 
   --border2: #cbd5e1; 
   --text: #0f172a; 
   --text2: #475569; 
   --accent: #059669; 
+  --accent-hover: #047857;
   --navy: #022c22;   
   --green: #10b981; 
   --amber: #d97706;
-  --radius: 12px; 
-  --radius-sm: 8px;
+  --radius: 16px; 
+  --radius-sm: 10px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 
-/* Watermark Background */
-body{
-  background-color: var(--bg);
+body { 
+  background: var(--bg-gradient); 
+  background-attachment: fixed;
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   display: flex;
@@ -52,44 +56,93 @@ body::before {
   background-image: url('bg-image.jpg');
   background-repeat: no-repeat;
   background-position: center center;
-  background-size: 60%; /* Adjusts the size of the watermark */
-  opacity: 0.08; /* Perfect subtle transparency */
+  background-size: 60%;
+  opacity: 0.08;
   z-index: -1;
-  pointer-events: none; /* Allows clicks to pass through the background */
+  pointer-events: none;
 }
 
-.container{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:30px 24px;width:100%;max-width:440px;text-align:center;box-shadow:0 10px 40px rgba(2,44,34,0.08); position:relative; overflow:hidden;}
+.container {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 32px 24px;
+  width: 100%;
+  max-width: 440px;
+  text-align: center;
+  box-shadow: var(--glass-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
 h1{font-size:24px;font-weight:800;margin-bottom:8px;color:var(--navy);}
 p{font-size:14px;color:var(--text2);margin-bottom:24px;line-height:1.5;}
 
-input,select{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-size:14px;padding:12px;outline:none;transition:all 0.2s;}
-input:focus,select:focus{border-color:var(--navy);background:#ffffff;box-shadow:0 0 0 3px rgba(2,44,34,0.1);}
-input.has-error, select.has-error { border-color: var(--accent) !important; background: #fef2f2 !important; }
+input,select {
+  width: 100%;
+  background: rgba(255,255,255,0.8);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 14px;
+  padding: 12px;
+  outline: none;
+  transition: all 0.2s;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+}
+input:focus,select:focus {
+  border-color: var(--accent);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
+}
+input.has-error, select.has-error { border-color: #ef4444 !important; background: #fef2f2 !important; }
 
-.error-text { color: var(--accent); font-size: 11px; font-weight: 600; text-align: left; margin: 4px 0 12px 4px; display: block; min-height: 14px; }
+.error-text { color: #ef4444; font-size: 11px; font-weight: 600; text-align: left; margin: 4px 0 12px 4px; display: block; min-height: 14px; }
 .form-group { margin-bottom: 4px; text-align: left; }
 
-.btn{width:100%;background:var(--accent);color:#fff;border:none;padding:14px;border-radius:var(--radius-sm);font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:10px;text-transform:uppercase;letter-spacing:0.5px; display:flex; align-items:center; justify-content:center;}
-.btn:active{transform:scale(0.98);}
-.btn:disabled{opacity:0.7;cursor:not-allowed;transform:none;}
-.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2);margin-top:12px;}
+.btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: #fff;
+  border: none;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(5,150,105,0.15);
+}
+.btn:hover { box-shadow: 0 6px 16px rgba(5,150,105,0.25); transform: translateY(-1px); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+.btn-ghost { background: rgba(255,255,255,0.6); color: var(--navy); border: 1px solid var(--border2); margin-top: 12px; box-shadow: none; }
+.btn-ghost:hover { background: #ffffff; border-color: var(--navy); }
 
 .result-card{display:none;padding:10px 0;}
-.success-bg { background: #d1fae5; border: 1px solid rgba(16,185,129,0.3); }
-.dup-bg { background: #fef3c7; border: 1px solid rgba(217,119,6,0.3); }
-.fail-bg { background: #fef2f2; border: 1px solid rgba(239,68,68,0.3); }
-.result-icon{font-size:54px;margin-bottom:10px;}
+.success-bg { background: linear-gradient(180deg, rgba(255,255,255,0.9), #d1fae5); border: 1px solid rgba(16,185,129,0.3); }
+.dup-bg { background: linear-gradient(180deg, rgba(255,255,255,0.9), #fef3c7); border: 1px solid rgba(217,119,6,0.3); }
+.fail-bg { background: linear-gradient(180deg, rgba(255,255,255,0.9), #fee2e2); border: 1px solid rgba(239,68,68,0.3); }
+.result-icon{font-size:54px;margin-bottom:10px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));}
 
 #companion-fields{display:none;text-align:left; animation: fadeIn 0.3s ease;}
 @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
 label{font-size:12px;color:var(--text2);display:block;margin-bottom:6px;font-weight:700;}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.section-title{font-size:14px;font-weight:800;color:var(--navy);margin:20px 0 12px;border-bottom:1px solid var(--border);padding-bottom:6px;text-transform:uppercase;}
+.section-title{font-size:14px;font-weight:800;color:var(--navy);margin:20px 0 12px;border-bottom:1px solid var(--glass-border);padding-bottom:6px;text-transform:uppercase;}
 
 /* Dynamic Brand Header */
 #dynamic-brand { text-align:center; margin-bottom:20px; width:100%; max-width:440px; }
-#brand-logo { height:64px; max-width:200px; object-fit:contain; margin:0 auto 10px auto; display:none; border-radius:6px; }
+#brand-logo { height:64px; max-width:200px; object-fit:contain; margin:0 auto 10px auto; display:none; border-radius:6px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05)); }
 #brand-title { color:var(--navy); font-weight:900; font-size:24px; display:none; margin-bottom:4px; }
 #brand-meta { color:var(--text2); font-size:13px; font-weight:600; display:none; }
 
@@ -98,10 +151,10 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:6px;font-wei
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* Ticket Details Box */
-.ticket-details { background: var(--bg2); border: 1px dashed var(--border2); border-radius: var(--radius-sm); padding: 16px; margin: 20px 0; text-align: left; }
-.ticket-row { margin-bottom: 8px; font-size: 12px; color: var(--text2); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--bg); padding-bottom: 8px;}
+.ticket-details { background: rgba(255,255,255,0.6); border: 1px dashed var(--border2); border-radius: var(--radius-sm); padding: 16px; margin: 20px 0; text-align: left; backdrop-filter: blur(4px); }
+.ticket-row { margin-bottom: 8px; font-size: 12px; color: var(--text2); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 8px;}
 .ticket-row:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
-.ticket-val { color: var(--text); font-size: 14px; font-weight: 700; text-align: right;}
+.ticket-val { color: var(--text); font-size: 14px; font-weight: 800; text-align: right;}
 </style>
 </head>
 <body>
@@ -125,7 +178,7 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:6px;font-wei
 
   <div id="companion-fields">
     <div class="section-title">2nd Guest Details (Dual Pass)</div>
-    <div id="comp-alert" style="display:none;background:#e0f2fe;border:1px solid rgba(14,165,233,0.3);padding:10px;border-radius:8px;font-size:12px;color:#0284c7;margin-bottom:16px;text-align:center;font-weight:600;">
+    <div id="comp-alert" style="display:none;background:rgba(224, 242, 254, 0.8);border:1px solid rgba(14,165,233,0.3);padding:10px;border-radius:8px;font-size:12px;color:#0284c7;margin-bottom:16px;text-align:center;font-weight:600;">
       Dual Pass detected! Please confirm your guest's details.
     </div>
 
@@ -159,14 +212,14 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:6px;font-wei
 </div>
 
 <div class="container result-card fail-bg" id="not-found-card">
-  <div class="success-icon">❌</div>
+  <div class="result-icon">❌</div>
   <h1 style="color:#ef4444">Not Registered</h1>
   <p style="margin-bottom:0;color:#991b1b;font-weight:600;">We couldn't find a matching ticket for this email or ID.<br><br>Please approach the Registration Desk for manual on-spot registration after paying the registration fee.</p>
-  <button class="btn" style="background:#ef4444;margin-top:20px;" onclick="resetForm()">Try Another ID</button>
+  <button class="btn" style="background: linear-gradient(135deg, #ef4444, #dc2626); margin-top:20px;" onclick="resetForm()">Try Another ID</button>
 </div>
 
 <div class="container result-card success-bg" id="success-card">
-  <div class="success-icon">✅</div>
+  <div class="result-icon">✅</div>
   <h1 style="color:var(--green)">Check-In Complete!</h1>
   <p style="margin-bottom:0;color:#065f46;font-weight:600;">Welcome to the event.</p>
   
@@ -177,11 +230,11 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:6px;font-wei
     <div class="ticket-row"><span>Time:</span> <span class="ticket-val" id="succ-time">10:00 AM</span></div>
   </div>
   
-  <button class="btn" style="background:var(--green);" onclick="resetForm()">Done / Scan Another</button>
+  <button class="btn" onclick="resetForm()">Done / Scan Another</button>
 </div>
 
 <div class="container result-card dup-bg" id="duplicate-card">
-  <div class="success-icon">⚠️</div>
+  <div class="result-icon">⚠️</div>
   <h1 style="color:var(--amber)">Already Checked In</h1>
   <p style="margin-bottom:0;color:#92400e;font-weight:600;">The system shows this pass has reached its limit.</p>
   
@@ -191,15 +244,14 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:6px;font-wei
     <div class="ticket-row"><span>Entries Used:</span> <span class="ticket-val" id="dup-count">1 / 1</span></div>
   </div>
   
-  <button class="btn" style="background:var(--amber);" onclick="resetForm()">Scan Another Pass</button>
+  <button class="btn" style="background: linear-gradient(135deg, #f59e0b, #d97706);" onclick="resetForm()">Scan Another Pass</button>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.0/firebase-app.js";
 import { getFirestore, collection, doc, getDocs, updateDoc, addDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/12.2.0/firebase-firestore.js";
 
-// REPLACE THIS CONFIG BLOCK WITH YOUR NEW "ONLINE-EVENT-PASS" KEYS
-// NEW ONLINE-EVENT-PASS KEYS
+// YOUR ONLINE-EVENT-PASS KEYS
 const firebaseConfig = {
   apiKey: "AIzaSyCq5rmox4ET5jA_rWmXw3y5TClQ3VLS_S0",
   authDomain: "online-event-pass.firebaseapp.com",
@@ -309,7 +361,7 @@ window.handleAction = async function() {
     } catch(e) { throwErr('lookup-input', 'Network error.'); setLoading(false); }
 
   } else {
-    // ── NORMAL LOOKUP (Case Insensitive Full Scan Fix) ──
+    // ── NORMAL LOOKUP (Case Insensitive) ──
     try {
       const searchVal = lookupVal.toLowerCase();
       let snap = await getDocs(query(collection(db, "guests"), where("uid", "==", lookupVal))); // Exact UID check
