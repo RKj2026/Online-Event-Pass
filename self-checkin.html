@@ -3,7 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Self Check-In</title>
+<title>Self Check-In | AAFT Online</title>
+
+<meta property="og:title" content="AAFT Online Event Pass - Self Check-In">
+<meta property="og:description" content="Check-in or register for the upcoming AAFT Online Event.">
+<meta property="og:image" content="https://rkj2026.github.io/YOUR-REPO-NAME/bg-image.jpg">
+<link rel="icon" type="image/jpeg" href="bg-image.jpg">
+
 <style>
 /* 🌿 PREMIUM GREEN THEME 🌿 */
 :root{ 
@@ -22,8 +28,37 @@
   --radius-sm: 8px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
-.container{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:30px 24px;width:100%;max-width:440px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.05); position:relative; overflow:hidden;}
+
+/* Watermark Background */
+body{
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background-image: url('bg-image.jpg');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 60%; /* Adjusts the size of the watermark */
+  opacity: 0.08; /* Perfect subtle transparency */
+  z-index: -1;
+  pointer-events: none; /* Allows clicks to pass through the background */
+}
+
+.container{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:30px 24px;width:100%;max-width:440px;text-align:center;box-shadow:0 10px 40px rgba(2,44,34,0.08); position:relative; overflow:hidden;}
 h1{font-size:24px;font-weight:800;margin-bottom:8px;color:var(--navy);}
 p{font-size:14px;color:var(--text2);margin-bottom:24px;line-height:1.5;}
 
@@ -98,17 +133,19 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:6px;font-wei
     <div class="form-group"><label>Guest Email *</label><input type="email" id="comp-email" placeholder="Valid Email" oninput="clearErr(this)"><span class="error-text" id="comp-email-err"></span></div>
     <div class="form-group"><label>Guest Mobile *</label><input type="tel" id="comp-mobile" placeholder="10-digit number" oninput="clearErr(this)"><span class="error-text" id="comp-mobile-err"></span></div>
     
-    <div class="form-group"><label>Is Guest an Alumni? *</label>
-    <select id="comp-alumni" onchange="document.getElementById('comp-alumni-wrap').style.display = this.value === 'Yes' ? 'block' : 'none'; clearErr(this);">
-      <option value="Yes">Yes, Alumni</option><option value="No">No, Non-Alumni</option>
-    </select></div>
-
-    <div id="comp-alumni-wrap">
-      <div class="grid-2">
-        <div class="form-group"><label>Guest School *</label><select id="comp-school" onchange="clearErr(this)"><option value="">Select...</option><option value="SOFD">SOFD</option><option value="SODM">SODM</option><option value="SOA">SOA</option><option value="SOC">SOC</option><option value="SODS">SODS</option><option value="SOJMC">SOJMC</option><option value="SOSP">SOSP</option><option value="SOID">SOID</option><option value="SOFA">SOFA</option><option value="SOM">SOM</option><option value="SOPA">SOPA</option><option value="SOPARE">SOPARE</option><option value="SOHT">SOHT</option><option value="SOW">SOW</option></select><span class="error-text" id="comp-school-err"></span></div>
-        <div class="form-group"><label>Passing Year *</label><input type="number" id="comp-year" placeholder="e.g. 2025" oninput="clearErr(this)"><span class="error-text" id="comp-year-err"></span></div>
+    <div class="grid-2">
+      <div class="form-group"><label>Guest Programme *</label>
+        <select id="comp-programme" onchange="clearErr(this)">
+          <option value="">Select...</option><option value="Undergraduate (UG)">Undergraduate (UG)</option><option value="Postgraduate (PG)">Postgraduate (PG)</option><option value="Diploma">Diploma</option><option value="Certificate">Certificate</option>
+        </select>
+        <span class="error-text" id="comp-programme-err"></span>
       </div>
-      <div class="form-group"><label>Guest Degree Type *</label><select id="comp-degree"><option value="UG">UG</option><option value="PG">PG</option><option value="DIP">DIP</option></select><span class="error-text"></span></div>
+      <div class="form-group"><label>Passing Year *</label>
+        <select id="comp-year" onchange="clearErr(this)">
+          <option value="">Select Year...</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option>
+        </select>
+        <span class="error-text" id="comp-year-err"></span>
+      </div>
     </div>
   </div>
 
@@ -163,14 +200,13 @@ import { getFirestore, collection, doc, getDocs, updateDoc, addDoc, onSnapshot, 
 
 // REPLACE THIS CONFIG BLOCK WITH YOUR NEW "ONLINE-EVENT-PASS" KEYS
 const firebaseConfig = {
-    apiKey: "AIzaSyCq5rmox4ET5jA_rWmXw3y5TCIQ3VLS_S0",
-    authDomain: "online-event-pass.firebaseapp.com",
-    projectId: "online-event-pass",
-    storageBucket: "online-event-pass.firebasestorage.app",
-    messagingSenderId: "480642479322",
-    appId: "1:480642479322:web:524e5488548e3cb91d21e3",
-    measurementId: "G-VLNFRQ5DQW"
-  };
+  apiKey: "AIzaSyAHoI1PZqsf_6UojNsgDFqSaQ_00I27onw",
+  authDomain: "scanner-system-32692.firebaseapp.com",
+  projectId: "scanner-system-32692",
+  storageBucket: "scanner-system-32692.firebasestorage.app",
+  messagingSenderId: "517388530229",
+  appId: "1:517388530229:web:418d4e80fce9bfa931f77c"
+};
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -240,17 +276,15 @@ window.handleAction = async function() {
     const cName = document.getElementById('comp-name').value.trim();
     const cEmail = document.getElementById('comp-email').value.trim();
     const cMobile = document.getElementById('comp-mobile').value.trim();
-    const isAlum = document.getElementById('comp-alumni').value;
-    const cSchool = isAlum === 'Yes' ? document.getElementById('comp-school').value : 'N/A';
-    const cYear = isAlum === 'Yes' ? document.getElementById('comp-year').value.trim() : 'N/A';
-    const cDegree = isAlum === 'Yes' ? document.getElementById('comp-degree').value : 'N/A';
+    const cProgramme = document.getElementById('comp-programme').value;
+    const cYear = document.getElementById('comp-year').value;
 
     let hasErr = false;
     if (!cName) { throwErr('comp-name', 'Required'); hasErr = true; }
     if (!cEmail) { throwErr('comp-email', 'Required'); hasErr = true; } else if(!valEmail(cEmail)) { throwErr('comp-email', 'Invalid'); hasErr=true;}
     if (!cMobile) { throwErr('comp-mobile', 'Required'); hasErr = true; } else if(!valMob(cMobile)) { throwErr('comp-mobile', 'Invalid'); hasErr=true;}
-    if (isAlum === 'Yes' && !cSchool) { throwErr('comp-school', 'Required'); hasErr = true; }
-    if (isAlum === 'Yes' && !cYear) { throwErr('comp-year', 'Required'); hasErr = true; }
+    if (!cProgramme) { throwErr('comp-programme', 'Required'); hasErr = true; }
+    if (!cYear) { throwErr('comp-year', 'Required'); hasErr = true; }
 
     if(hasErr) { setLoading(false); return; }
     
@@ -261,14 +295,14 @@ window.handleAction = async function() {
       // Update DB with the confirmed companion info
       await updateDoc(doc(db, "guests", foundDocIdTemp), { 
         checkinCount: 2, lastCheckin: new Date().toISOString(),
-        compName: cName, compEmail: cEmail, compMobile: cMobile, compAlumni: isAlum, compSchool: cSchool, compYear: cYear, compDegree: cDegree
+        compName: cName, compEmail: cEmail, compMobile: cMobile, compProgramme: cProgramme, compYear: cYear
       });
       
       if (count === 0) {
         await addDoc(collection(db, "log"), { uid: foundGuestTemp.uid, name: foundGuestTemp.name, programme: foundGuestTemp.programme||'', passYear: foundGuestTemp.passYear||'', email: foundGuestTemp.email||'', mobile: foundGuestTemp.mobile||'', passType: foundGuestTemp.passType, type: "checked_in", time: new Date().toISOString() });
       }
       
-      await addDoc(collection(db, "log"), { uid: foundGuestTemp.uid+"-GUEST", name: cName, degree: cDegree, school: cSchool, passYear: cYear, email: cEmail, mobile: cMobile, passType: "Companion Entry", type: "checked_in", time: new Date().toISOString() });
+      await addDoc(collection(db, "log"), { uid: foundGuestTemp.uid+"-GUEST", name: cName, programme: cProgramme, passYear: cYear, email: cEmail, mobile: cMobile, passType: "Companion Entry", type: "checked_in", time: new Date().toISOString() });
       
       showSuccess(foundGuestTemp.name + " & " + cName, isCompanionOnly ? 'Guest Entry' : foundGuestTemp.passType);
     } catch(e) { throwErr('lookup-input', 'Network error.'); setLoading(false); }
@@ -305,14 +339,8 @@ window.handleAction = async function() {
              if(foundGuestTemp.compName) document.getElementById('comp-name').value = foundGuestTemp.compName;
              if(foundGuestTemp.compEmail) document.getElementById('comp-email').value = foundGuestTemp.compEmail;
              if(foundGuestTemp.compMobile) document.getElementById('comp-mobile').value = foundGuestTemp.compMobile;
-             
-             const isAlumDefault = foundGuestTemp.compAlumni === 'No' ? 'No' : 'Yes';
-             document.getElementById('comp-alumni').value = isAlumDefault;
-             document.getElementById('comp-alumni-wrap').style.display = isAlumDefault === 'Yes' ? 'block' : 'none';
-             
-             if(foundGuestTemp.compSchool) document.getElementById('comp-school').value = foundGuestTemp.compSchool;
+             if(foundGuestTemp.compProgramme) document.getElementById('comp-programme').value = foundGuestTemp.compProgramme;
              if(foundGuestTemp.compYear) document.getElementById('comp-year').value = foundGuestTemp.compYear;
-             if(foundGuestTemp.compDegree) document.getElementById('comp-degree').value = foundGuestTemp.compDegree;
 
              const btn = document.getElementById('action-btn');
              btn.setAttribute('data-default', 'Check In Both');
@@ -330,14 +358,8 @@ window.handleAction = async function() {
              if(foundGuestTemp.compName) document.getElementById('comp-name').value = foundGuestTemp.compName;
              if(foundGuestTemp.compEmail) document.getElementById('comp-email').value = foundGuestTemp.compEmail;
              if(foundGuestTemp.compMobile) document.getElementById('comp-mobile').value = foundGuestTemp.compMobile;
-             
-             const isAlumDefault = foundGuestTemp.compAlumni === 'No' ? 'No' : 'Yes';
-             document.getElementById('comp-alumni').value = isAlumDefault;
-             document.getElementById('comp-alumni-wrap').style.display = isAlumDefault === 'Yes' ? 'block' : 'none';
-             
-             if(foundGuestTemp.compSchool) document.getElementById('comp-school').value = foundGuestTemp.compSchool;
+             if(foundGuestTemp.compProgramme) document.getElementById('comp-programme').value = foundGuestTemp.compProgramme;
              if(foundGuestTemp.compYear) document.getElementById('comp-year').value = foundGuestTemp.compYear;
-             if(foundGuestTemp.compDegree) document.getElementById('comp-degree').value = foundGuestTemp.compDegree;
              
              const btn = document.getElementById('action-btn');
              btn.setAttribute('data-default', 'Check In Guest');
