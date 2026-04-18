@@ -100,6 +100,7 @@ input[type=text],input[type=email],input[type=tel],input[type=number],select{wid
 input:focus,select:focus{border-color:var(--accent);background:#ffffff; box-shadow: 0 0 0 3px rgba(16,185,129,0.15);}
 label{font-size:11px;color:var(--text2);display:block;margin-bottom:6px;font-weight:700;}
 .form-row{display:grid;gap:12px;margin-bottom:12px;}.cols2{grid-template-columns:1fr 1fr;}
+.form-row.cols1{grid-template-columns:1fr;}
 
 /* Premium Buttons */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all 0.2s;white-space:nowrap;box-shadow:0 2px 4px rgba(0,0,0,0.05);}
@@ -276,9 +277,8 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:6px;font-wei
         </div>
         <div class="form-row cols2">
           <div><label>Programme *</label>
-            <select id="add-programme">
-              <option value="">Select...</option><option value="Undergraduate (UG)">Undergraduate (UG)</option><option value="Postgraduate (PG)">Postgraduate (PG)</option><option value="Diploma">Diploma</option><option value="Certificate">Certificate</option>
-            </select>
+            <input type="text" id="add-programme" list="prog-datalist" placeholder="Select or type...">
+            <datalist id="prog-datalist"></datalist>
           </div>
           <div><label>Passing Year *</label>
             <select id="add-year">
@@ -337,6 +337,11 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:6px;font-wei
         <div class="form-row cols2">
           <div><label>Event Time</label><input type="text" id="evt-time" placeholder="e.g. 10:00 AM – 1:00 PM" oninput="scheduleRebuild()"></div>
           <div><label>Venue</label><input type="text" id="evt-venue" placeholder="e.g. Main Auditorium" oninput="scheduleRebuild()"></div>
+        </div>
+        <div class="form-row cols1" style="grid-template-columns: 1fr;">
+          <div><label>Programme Dropdown List (Comma Separated)</label>
+            <input type="text" id="evt-prog-list" placeholder="e.g. Undergraduate (UG), Postgraduate (PG), Diploma" oninput="scheduleRebuild()">
+          </div>
         </div>
       </div>
       <div class="card">
@@ -443,8 +448,12 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:6px;font-wei
   <button id="undo-btn" onclick="executeUndo()">Undo</button>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.0/firebase-app.js";
+// 🚀 LOW BANDWIDTH UPGRADE: Importing Local Cache Tools
 import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, setDoc, updateDoc, onSnapshot, query, orderBy, writeBatch, addDoc, deleteDoc, where, getDocs } from "https://www.gstatic.com/firebasejs/12.2.0/firebase-firestore.js";
 
 // ══ ONLINE-EVENT-PASS DB CONFIG ══
@@ -458,25 +467,11 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig); 
-let db;
 
-// 🚀 SAFE FALLBACK FOR OFFLINE MODE
-try {
-  db = initializeFirestore(app, {
-    localCache: persistentLocalCache({tabManager: persistentMultipleTabManager()})
-  });
-} catch (e) {
-  console.warn("Browser blocked offline cache. Using standard connection.");
-  db = getFirestore(app);
-}
-
-// Ensure global tab switcher is available early
-window.switchTab = function(el,name){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active'); document.getElementById('tab-'+name).classList.add('active');
-  if(name==='passes') window.buildAllPasses(); if(name!=='scanner') window.stopScanner(); if(name==='log') window.renderLog();
-  if(name==='analytics') setTimeout(window.buildCharts, 100); 
-}
+// 🚀 LOW BANDWIDTH UPGRADE: Enable Offline Persistence
+const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({tabManager: persistentMultipleTabManager()})
+});
 
 window.guests = []; window.entryLog = []; window.recentScans = [];
 let videoStream=null, scanInterval=null, torchOn=false, lastScanTime=0;
@@ -498,6 +493,17 @@ onSnapshot(doc(db, "config", "eventDetails"), (snap) => {
     safeSet('evt-name', data.evtName); safeSet('evt-date', data.evtDate); safeSet('evt-time', data.evtTime);
     safeSet('evt-venue', data.evtVenue); safeSet('inst-name', data.instName); safeSet('inst-addr', data.instAddr);
     
+    // 💡 POPULATE SMART DATALIST FROM FIREBASE
+    safeSet('evt-prog-list', data.progList);
+    const dl = document.getElementById('prog-datalist');
+    if (dl) {
+      dl.innerHTML = '';
+      const listString = data.progList || 'Undergraduate (UG),Postgraduate (PG),Diploma,Certificate';
+      listString.split(',').forEach(p => {
+        if(p.trim()) { const opt = document.createElement('option'); opt.value = p.trim(); dl.appendChild(opt); }
+      });
+    }
+
     if(data.instName) document.getElementById('app-header-title').textContent = data.instName;
     else document.getElementById('app-header-title').innerHTML = 'Event<span style="color:var(--green);">Pass</span>';
 
@@ -624,6 +630,13 @@ window.esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/
 window.initials=n=>n.trim().split(/\s+/).map(w=>w[0]).join('').substr(0,2).toUpperCase();
 window.fmtTime=iso=>new Date(iso).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 window.isDual=g=>(g.passType||'').toLowerCase().includes('dual');
+
+window.switchTab = function(el,name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active'); document.getElementById('tab-'+name).classList.add('active');
+  if(name==='passes') window.buildAllPasses(); if(name!=='scanner') window.stopScanner(); if(name==='log') window.renderLog();
+  if(name==='analytics') setTimeout(window.buildCharts, 100); 
+}
 
 function updateStats(){
   let totalCapacity = 0; let totalCheckedIn = 0; let singleCount = 0; let dualCount = 0;
@@ -771,8 +784,30 @@ function drawPass(g,evtName,evtDate,evtTime,evtVenue,instName,instAddr,color,qrU
   return cv;
 }
 
-window.getSettings = function(){ return{ evtName: document.getElementById('evt-name').value.trim()||'Event', evtDate: document.getElementById('evt-date').value.trim(), evtTime: document.getElementById('evt-time').value.trim(), evtVenue:document.getElementById('evt-venue').value.trim(), instName:document.getElementById('inst-name').value.trim(), instAddr:document.getElementById('inst-addr').value.trim(), }; }
-window.saveSettingsToFirebase = async function() { const s = { evtName: document.getElementById('evt-name').value.trim(), evtDate: document.getElementById('evt-date').value.trim(), evtTime: document.getElementById('evt-time').value.trim(), evtVenue: document.getElementById('evt-venue').value.trim(), instName: document.getElementById('inst-name').value.trim(), instAddr: document.getElementById('inst-addr').value.trim(), logoDataUrl: logoDataUrl || '' }; try { await setDoc(doc(db, "config", "eventDetails"), s); } catch(e) { console.error("Save error", e); } };
+window.getSettings = function(){ 
+  return { 
+    evtName: document.getElementById('evt-name').value.trim()||'Event', 
+    evtDate: document.getElementById('evt-date').value.trim(), 
+    evtTime: document.getElementById('evt-time').value.trim(), 
+    evtVenue:document.getElementById('evt-venue').value.trim(), 
+    instName:document.getElementById('inst-name').value.trim(), 
+    instAddr:document.getElementById('inst-addr').value.trim(), 
+    progList:document.getElementById('evt-prog-list').value.trim() 
+  }; 
+}
+window.saveSettingsToFirebase = async function() { 
+  const s = { 
+    evtName: document.getElementById('evt-name').value.trim(), 
+    evtDate: document.getElementById('evt-date').value.trim(), 
+    evtTime: document.getElementById('evt-time').value.trim(), 
+    evtVenue: document.getElementById('evt-venue').value.trim(), 
+    instName: document.getElementById('inst-name').value.trim(), 
+    instAddr: document.getElementById('inst-addr').value.trim(), 
+    progList: document.getElementById('evt-prog-list').value.trim(),
+    logoDataUrl: logoDataUrl || '' 
+  }; 
+  try { await setDoc(doc(db, "config", "eventDetails"), s); } catch(e) { console.error("Save error", e); } 
+};
 window.scheduleRebuild = function(){ clearTimeout(rebuildTimer); rebuildTimer=setTimeout(window.buildAllPasses,800); clearTimeout(saveTimer); saveTimer = setTimeout(window.saveSettingsToFirebase, 1500); }
 window.buildAllPasses = function(){ const grid=document.getElementById('pass-grid'); if(!window.guests.length){grid.innerHTML='<div class="empty">Import attendees first.</div>';return;} grid.innerHTML='<div class="empty" style="padding:20px">Generating passes…</div>'; const s=window.getSettings();let logoImg=null;const go=()=>genQRs(s,logoImg); if(logoDataUrl){logoImg=new Image();logoImg.onload=go;logoImg.onerror=go;logoImg.src=logoDataUrl;}else go(); }
 function genQRs(s,logoImg){ const total=window.guests.length;let done=0;const qrUrls=new Array(total).fill(''); window.guests.forEach((g,idx)=>{ const tmp=document.createElement('div');tmp.style.cssText='position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;'; document.body.appendChild(tmp); try{new QRCode(tmp,{text:g.uid,width:280,height:280,correctLevel:QRCode.CorrectLevel.M});}catch(e){} setTimeout(()=>{ const qi=tmp.querySelector('img');const qc=tmp.querySelector('canvas'); qrUrls[idx]=qi?qi.src:(qc?qc.toDataURL():'');try{document.body.removeChild(tmp);}catch(e){} if(++done===total) renderGrid(qrUrls,s,logoImg); },280); }); }
